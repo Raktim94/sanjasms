@@ -9,4 +9,4 @@ services:
       - ./static/uploads:/app/static/uploads
     environment:
       - DB_Path=/data/cms.db
-    restart: unless-stopped
+    restart: always
