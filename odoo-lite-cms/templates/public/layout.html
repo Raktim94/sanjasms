@@ -1,0 +1,120 @@
+{{define "public_layout"}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{if .Title}}{{.Title}}{{else}}{{index .Settings "site_name"}}{{end}}</title>
+    <meta name="description" content="{{.MetaDescription}}">
+    <meta name="keywords" content="{{.MetaKeywords}}">
+    <link rel="icon" href="{{index .Settings " favicon_url"}}">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #eee;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            max-height: 40px;
+            margin-right: 10px;
+        }
+
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #555;
+        }
+
+        nav a:hover {
+            color: #000;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 960px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        footer {
+            background: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            margin-top: auto;
+        }
+
+        /* Odoo-like simple styles */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #714B67;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+    <!-- Custom Header Code -->
+    {{if index .Settings "header_content"}}
+    {{index .Settings "header_content" | safe}}
+    {{end}}
+</head>
+
+<body>
+    <header>
+        <a href="/" class="logo">
+            {{if index .Settings "logo_url"}}<img src="{{index .Settings " logo_url"}}" alt="Logo">{{end}}
+            {{if index .Settings "site_name"}}{{index .Settings "site_name"}}{{else}}Odoo Lite{{end}}
+        </a>
+        <nav>
+            {{range .Menus}}
+            <a href="{{.URL}}">{{.Label}}</a>
+            {{end}}
+            {{if not .Menus}}
+            <!-- Default admin link if no menu -->
+            <a href="/admin/login">Admin Login</a>
+            {{end}}
+        </nav>
+    </header>
+
+    <main>
+        {{template "content" .}}
+    </main>
+
+    <footer>
+        {{if index .Settings "footer_content"}}
+        {{index .Settings "footer_content" | safe}}
+        {{else}}
+        <p>&copy; 2026 Odoo Lite CMS</p>
+        {{end}}
+        <br>
+        <a href="/admin/login" style="font-size:0.8em; color:#ccc; text-decoration:none;">Admin</a>
+    </footer>
+</body>
+
+</html>
+{{end}}

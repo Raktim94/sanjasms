@@ -1,0 +1,38 @@
+{{define "settings.html"}}
+{{template "admin_layout" .}}
+{{end}}
+
+{{define "content"}}
+<h1>Site Settings</h1>
+
+<div class="card">
+    <form method="POST" action="/admin/settings">
+        <h3>General Info</h3>
+        <label style="display:block; margin-bottom:5px;">Site Name</label>
+        <input type="text" name="site_name" value="{{index .Settings " site_name"}}"
+            style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
+
+        <label style="display:block; margin-bottom:5px;">Logo URL</label>
+        <input type="text" name="logo_url" value="{{index .Settings " logo_url"}}" placeholder="/static/uploads/..."
+            style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
+        <p style="font-size:0.8em; color:#666;">Upload logo in Media manager and paste URL here.</p>
+
+        <label style="display:block; margin-bottom:5px;">Favicon URL</label>
+        <input type="text" name="favicon_url" value="{{index .Settings " favicon_url"}}"
+            style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
+
+        <h3>Header & Footer</h3>
+        <label style="display:block; margin-bottom:5px;">Custom Header Content (HTML)</label>
+        <textarea name="header_content"
+            style="width:100%; height:100px; padding:8px; margin-bottom:15px; border:1px solid #ddd;">{{index .Settings "header_content"}}</textarea>
+
+        <label style="display:block; margin-bottom:5px;">Custom Footer Content (HTML)</label>
+        <textarea name="footer_content"
+            style="width:100%; height:100px; padding:8px; margin-bottom:15px; border:1px solid #ddd;">{{index .Settings "footer_content"}}</textarea>
+
+        <div style="margin-top:20px; text-align:right;">
+            <button type="submit" class="btn">Save Settings</button>
+        </div>
+    </form>
+</div>
+{{end}}

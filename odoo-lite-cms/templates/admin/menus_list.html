@@ -1,0 +1,48 @@
+{{define "menus_list.html"}}
+{{template "admin_layout" .}}
+{{end}}
+
+{{define "content"}}
+<div style="display:flex; justify-content:space-between; align-items:center;">
+    <h1>Menus</h1>
+    <a href="/admin/menus/new" class="btn">Add Menu Item</a>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Sequence</th>
+                <th>Label</th>
+                <th>URL</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Menus}}
+            <tr>
+                <td>{{.Sequence}}</td>
+                <td>{{.Label}}</td>
+                <td>{{.URL}}</td>
+                <td>
+                    {{if .IsActive}}
+                    <span class="badge success">Active</span>
+                    {{else}}
+                    <span class="badge">Inactive</span>
+                    {{end}}
+                </td>
+                <td>
+                    <a href="/admin/menus/{{.ID}}/edit" style="margin-right: 10px;">Edit</a>
+                    <form method="POST" action="/admin/menus/{{.ID}}/delete" style="display:inline;"
+                        onsubmit="return confirm('Are you sure?');">
+                        <button type="submit"
+                            style="background:none; border:none; color:red; cursor:pointer; text-decoration:underline; font-size:1em; padding:0;">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+{{end}}

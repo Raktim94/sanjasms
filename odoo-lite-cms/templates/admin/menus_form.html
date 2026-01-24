@@ -1,0 +1,35 @@
+{{define "menus_form.html"}}
+{{template "admin_layout" .}}
+{{end}}
+
+{{define "content"}}
+<div style="display:flex; justify-content:space-between; align-items:center;">
+    <h1>{{if .IsNew}}New Menu Item{{else}}Edit Menu Item{{end}}</h1>
+    <a href="/admin/menus" class="btn btn-secondary">Cancel</a>
+</div>
+
+<div class="card">
+    {{if .Error}}<p style="color:red;">{{.Error}}</p>{{end}}
+    <form method="POST" action="{{if .IsNew}}/admin/menus{{else}}/admin/menus/{{.Menu.ID}}{{end}}">
+        <label style="display:block; margin-bottom:5px;">Label</label>
+        <input type="text" name="label" value="{{.Menu.Label}}" required
+            style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
+
+        <label style="display:block; margin-bottom:5px;">URL (e.g., /about or https://google.com)</label>
+        <input type="text" name="url" value="{{.Menu.URL}}" required
+            style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
+
+        <label style="display:block; margin-bottom:5px;">Sequence (Order)</label>
+        <input type="number" name="sequence" value="{{.Menu.Sequence}}" required
+            style="width:100px; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
+
+        <label style="margin-bottom:15px; display:block;">
+            <input type="checkbox" name="is_active" {{if .Menu.IsActive}}checked{{end}}> Active
+        </label>
+
+        <div style="margin-top:20px; text-align:right;">
+            <button type="submit" class="btn">Save Menu Item</button>
+        </div>
+    </form>
+</div>
+{{end}}

@@ -1,0 +1,46 @@
+{{define "pages_list.html"}}
+{{template "admin_layout" .}}
+{{end}}
+
+{{define "content"}}
+<div style="display:flex; justify-content:space-between; align-items:center;">
+    <h1>Pages</h1>
+    <a href="/admin/pages/new" class="btn">Create Page</a>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>URL Slug</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Pages}}
+            <tr>
+                <td>{{.Title}}</td>
+                <td>/{{.Slug}}</td>
+                <td>
+                    {{if .IsPublished}}
+                    <span class="badge success">Published</span>
+                    {{else}}
+                    <span class="badge">Draft</span>
+                    {{end}}
+                </td>
+                <td>
+                    <a href="/admin/pages/{{.ID}}/edit" style="margin-right: 10px;">Edit</a>
+                    <form method="POST" action="/admin/pages/{{.ID}}/delete" style="display:inline;"
+                        onsubmit="return confirm('Are you sure?');">
+                        <button type="submit"
+                            style="background:none; border:none; color:red; cursor:pointer; text-decoration:underline; font-size:1em; padding:0;">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+{{end}}

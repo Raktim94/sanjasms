@@ -1,0 +1,67 @@
+{{define "media_list.html"}}
+{{template "admin_layout" .}}
+{{end}}
+
+{{define "content"}}
+<h1>Media Manager</h1>
+
+<div class="card">
+    <h3>Upload New File</h3>
+    <form method="POST" action="/admin/media/upload" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit" class="btn">Upload</button>
+        <p style="font-size:0.8em; color:#666;">Max file size: 100MB.</p>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Library</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Preview</th>
+                <th>Filename</th>
+                <th>Size</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Files}}
+            <tr>
+                <td>
+                    <a href="{{.Path}}" target="_blank">
+                        <img src="{{.Path}}" style="max-height: 50px; max-width: 100px;">
+                    </a>
+                </td>
+                <td><a href="{{.Path}}" target="_blank">{{.Filename}}</a></td>
+                <td>{{.Size}} bytes</td>
+                <td>{{.MimeType}}</td>
+                <td>
+                    <button onclick="copyToClipboard('{{.Path}}')" style="cursor:pointer; padding:5px;">Copy
+                        URL</button>
+                    <form method="POST" action="/admin/media/{{.ID}}/delete" style="display:inline;"
+                        onsubmit="return confirm('Are you sure?');">
+                        <button type="submit"
+                            style="background:none; border:none; color:red; cursor:pointer; text-decoration:underline;">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function copyToClipboard(text) {
+        // We want absolute URL? Or relative? User asked for "easy copying of the file URL"
+        // Usually absolute is better for sharing, relative for internal embedding.
+        // Let's assume relative for now, but maybe full if needed.
+        // Actually, window.location.origin
+        const fullUrl = window.location.origin + text;
+        navigator.clipboard.writeText(fullUrl).then(() => {
+            alert("URL copied: " + fullUrl);
+        });
+    }
+</script>
+{{end}}

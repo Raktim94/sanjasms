@@ -1,0 +1,50 @@
+package handlers
+
+import (
+	"html/template"
+	"net/http"
+	"odoo-lite-cms/models"
+	"strings"
+
+	"github.com/labstack/echo/v4"
+)
+
+func PublicPage(c echo.Context) error {
+	slug := c.Param("*")
+	// If slug is empty or "/", lookup "home" or first page.
+	if slug == "" || slug == "/" {
+		slug = "home"
+	}
+	// Clean leading slash
+	slug = strings.TrimPrefix(slug, "/")
+
+	var page models.Page
+	// Find published page by slug
+	if err := models.DB.Where("slug = ? AND is_published = ?", slug, true).First(&page).Error; err != nil {
+		return c.Render(http.StatusNotFound, "404.html", map[string]interface{}{
+			"Title":    "Page Not Found",
+			"Settings": GetSettingsMap(), // Need settings for header/footer
+			"Menus":    GetPublicMenus(),
+		})
+	}
+
+	// Get Menus and Settings
+	menus := GetPublicMenus()
+	settings := GetSettingsMap()
+
+	return c.Render(http.StatusOK, "page.html", map[string]interface{}{
+		"Title":           page.MetaTitle, // Fallback to Title if empty handled in template
+		"MetaDescription": page.MetaDescription,
+		"MetaKeywords":    page.MetaKeywords,
+		"Content":         template.HTML(page.HTMLContent), // Trusting admin content as safe
+		"Page":            page,
+		"Menus":           menus,
+		"Settings":        settings,
+	})
+}
+
+func GetPublicMenus() []models.Menu {
+	var menus []models.Menu
+	models.DB.Where("is_active = ?", true).Order("sequence asc").Find(&menus)
+	return menus
+}

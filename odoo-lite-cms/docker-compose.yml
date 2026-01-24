@@ -1,0 +1,12 @@
+services:
+  cms:
+    build: .
+    container_name: odoo-lite-cms
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+      - ./static/uploads:/app/static/uploads
+    environment:
+      - DB_Path=/data/cms.db
+    restart: unless-stopped
