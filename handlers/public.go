@@ -21,20 +21,33 @@ func PublicPage(c echo.Context) error {
 
 	log.Printf("PublicPage requested: slug='%s'", slug)
 
+	// Safe retrieval of shared data
+	menus := GetPublicMenus()
+	if menus == nil {
+		menus = []models.Menu{}
+	}
+	settings := GetSettingsMap()
+	if settings == nil {
+		settings = map[string]string{
+			"site_title":  "sanjanacms",
+			"footer_text": "Default Footer",
+		}
+	}
+
 	var page models.Page
 	// Find published page by slug
 	if err := models.DB.Where("slug = ? AND is_published = ?", slug, true).First(&page).Error; err != nil {
 		log.Printf("Page not found in DB: %s (error: %v)", slug, err)
+
+		// Render 404 with safe context
+		// IMPORTANT: Pass a nil Page to force template fallback logic
 		return c.Render(http.StatusNotFound, "404.html", map[string]interface{}{
 			"Title":    "Page Not Found",
-			"Settings": GetSettingsMap(), // Need settings for header/footer
-			"Menus":    GetPublicMenus(),
+			"Settings": settings,
+			"Menus":    menus,
+			"Page":     nil,
 		})
 	}
-
-	// Get Menus and Settings
-	menus := GetPublicMenus()
-	settings := GetSettingsMap()
 
 	log.Printf("Rendering page: %s with template 'page.html'", page.Title)
 
@@ -57,6 +70,9 @@ func PublicPage(c echo.Context) error {
 
 func GetPublicMenus() []models.Menu {
 	var menus []models.Menu
+	if models.DB == nil {
+		return menus
+	}
 	models.DB.Where("is_active = ?", true).Order("sequence asc").Find(&menus)
 	return menus
 }
