@@ -141,7 +141,7 @@ func main() {
 				}
 
 				t.templates[fileName] = tmpl
-				log.Printf("Registered public template: %s (with layout)", fileName)
+				log.Printf("SUCCESS: Registered public template: %s (Linked to public_layout)", fileName)
 			}
 
 			// Also register the 404 page explicitly if it wasn't caught above
