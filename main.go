@@ -108,7 +108,9 @@ func main() {
 				if len(publicCommon) > 0 {
 					// Check existence because public layout might not exist yet
 					if _, err := os.Stat(publicCommon[0]); err == nil {
-						tmpl.ParseFiles(publicCommon...)
+						if _, err := tmpl.ParseFiles(publicCommon...); err != nil {
+							log.Printf("Error parsing public layout for %s: %v", fileName, err)
+						}
 					} else {
 						log.Printf("Public layout not found: %s", publicCommon[0])
 					}
