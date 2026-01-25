@@ -10,13 +10,18 @@ import (
 
 // Helper to get settings as map
 func GetSettingsMap() map[string]string {
+	settingsMap := make(map[string]string)
+
+	if models.DB == nil {
+		return settingsMap
+	}
+
 	var settings []models.Setting
 	if err := models.DB.Find(&settings).Error; err != nil {
 		log.Printf("Error fetching settings: %v", err)
-		return make(map[string]string)
+		return settingsMap
 	}
 
-	settingsMap := make(map[string]string)
 	for _, s := range settings {
 		settingsMap[s.Key] = s.Value
 	}
