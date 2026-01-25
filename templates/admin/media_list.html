@@ -131,9 +131,44 @@
 <script>
     function copyToClipboard(text) {
         const fullUrl = window.location.origin + text;
-        navigator.clipboard.writeText(fullUrl).then(() => {
-            alert("URL copied: " + fullUrl);
-        });
+
+        // Modern API
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                alert("URL copied: " + fullUrl);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                fallbackCopyTextToClipboard(fullUrl);
+            });
+        } else {
+            // Fallback
+            fallbackCopyTextToClipboard(fullUrl);
+        }
+    }
+
+    function fallbackCopyTextToClipboard(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+
+        // Ensure it's not visible but part of DOM
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+
+        textArea.focus();
+        textArea.select();
+
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            if (successful) alert("URL copied: " + text);
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+            alert("Failed to copy URL. Please manually copy: " + text);
+        }
+
+        document.body.removeChild(textArea);
     }
 </script>
 {{end}}
