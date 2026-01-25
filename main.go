@@ -131,13 +131,12 @@ func main() {
 
 				// Verify layout exists
 				if _, err := os.Stat(publicLayout); err != nil {
-					log.Printf("CRITICAL: Public layout not found at %s", publicLayout)
-					continue
+					log.Fatalf("FATAL ERROR: Public layout layout.html missing at %s", publicLayout)
 				}
 
 				if _, err := tmpl.ParseFiles(filesToParse...); err != nil {
-					log.Printf("Error parsing public template set for %s: %v", fileName, err)
-					continue
+					// CRITICAL: Fail fast if templates are broken
+					log.Fatalf("FATAL ERROR: Could not parse public template %s: %v", fileName, err)
 				}
 
 				t.templates[fileName] = tmpl
