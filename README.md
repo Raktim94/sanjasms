@@ -4,87 +4,83 @@ A detailed, production-ready, lightweight CMS designed to replicate the core web
 
 ## 🚀 Features
 
--   **Zero Dependency Deployment:** Runs entirely in a single Docker container.
--   **Fast Performance:** Written in Go with SQLite.
--   **Page Builder:** Create pages with custom HTML, Meta Tags, and SEO settings.
--   **Menu Manager:** Drag-and-drop or sequence-based menu ordering.
--   **Media Library:** Upload images (up to 100MB) and easily copy URLs for use in pages.
--   **Modern Admin UI:** Clean, "Apple-esque" design for a premium feel.
--   **Robust Logging:** Detailed logs for debugging production issues.
+### 🔐 Login & Access
+-   Create an admin account using email and password.
+-   First account becomes the main administrator.
+-   Turn off public sign-ups for private access.
+-   Clean Admin Login button on the website.
+-   Central dashboard to manage everything after login.
 
-## 🛠 Prerequisites
+### 🧭 Admin Dashboard
+Control your entire website from one place:
+-   **Pages:** Create unlimited normal or landing pages.
+-   **Menus:** Manage main and footer menus with drag-and-drop ordering.
+-   **Media:** Upload images (PNG, JPG, WebP) and PDFs (up to 100MB).
+-   **SEO:** Edit meta titles, descriptions, and Open Graph tags.
+-   **Settings:** Customize logo, favicon, title, and brand colors.
+-   **Users:** Manage additional admin users.
 
--   **Docker** and **Docker Compose** installed on your machine or server.
+### 📄 Page Management
+-   Create unlimited pages.
+-   **Page Builder:** Build pages using simple blocks (Text, Image, Button, Custom HTML).
+-   **Embeds:** Easily embed YouTube, Maps, or Forms using the HTML block.
+-   **Fast Loading:** All pages are server-side rendered for instant speed.
+
+### 🧭 Menu Builder
+-   Create multiple menus (Main, Footer, etc.).
+-   Drag items to reorder.
+-   Create nested dropdowns.
+-   Enable/Disable items without deleting.
+
+### 🎨 Branding
+-   Upload website logo and favicon.
+-   Set primary brand color (affects buttons and links).
+-   Edit footer text.
+-   Updates appear instantly—no rebuild required.
+
+### 🔍 SEO Manager
+-   **Meta Tags:** Edit Title, Description, Keywords for every page.
+-   **Social Sharing:** Control Open Graph image and title.
+-   **Indexing:** Control search engine visibility (index/noindex).
+-   **Automated:** Sitemap (`/sitemap.xml`) and Robots rules generated automatically.
+
+### ⚡ Technical
+-   **Zero Dependency:** Runs entirely in a single Docker container.
+-   **Port:** Default `8080` (Configurable).
+
+---
+
+## 🔒 Security
+-   Admin area is protected and private.
+-   File uploads are safe and controlled.
+-   Login sessions are secure.
+
+## 🧩 What This CMS Is NOT
+-   No ERP
+-   No Billing / Inventory
+-   No Ads
+-   No AI content generation
+
+---
 
 ## 📦 How to Run
 
-### 1. Clone the Repository
+### 1. Clone & Start
 ```bash
 git clone https://github.com/Raktim94/sanjasms.git
 cd sanjasms
-```
-
-### 2. Start the Server
-Run the following command to build and start the container in the background:
-```bash
 docker compose up -d --build
 ```
-*Note: The first build might take a minute to compile the Go application.*
 
-### 3. Access the Application
--   **Public Website:** [http://localhost:8080](http://localhost:8080)
--   **Admin Panel:** [http://localhost:8080/admin/login](http://localhost:8080/admin/login)
+### 2. Access
+-   **Website:** `http://localhost:2512`
+-   **Admin:** `http://localhost:2512/admin/login`
 
-### 4. Default Login Credentials
+### 3. Default Credentials
 -   **Email:** `hi@RAKTIMranjit.in`
 -   **Password:** `hi@raktim`
 
-> **Security Tip:** Change these credentials immediately after logging in via the database or future profile settings.
-
-## 📝 Usage Guide
-
-### Creating a New Page
-1.  Go to **Pages** in the sidebar.
-2.  Click **"New Page"**.
-3.  Enter a **Slug** (e.g., `services` for `yourdomain.com/services`).
-4.  Enter a **Title** and **HTML Content**. 
-    *   *Tip: Use the Media Library to upload images first, copy their URL, and paste it into `<img>` tags here.*
-5.  Set **Is Published** to `Active`.
-6.  Click **Save**.
-
-### Managing Menus
-1.  Go to **Menus**.
-2.  Add a new menu, linking it to your page slug (e.g., `/services`).
-3.  Set the sequence number to order them (1, 2, 3...).
-
-### Uploading Images
-1.  Go to **Media**.
-2.  Click **Upload File**.
-3.  Once uploaded, click **Copy URL**.
-4.  Paste this URL into your page content.
-
-## 🔧 Troubleshooting
-
-### "Internal Server Error" (500)
--   **Check Logs:** Run `docker compose logs cms` to see the error detail.
--   **Database:** Ensure `data/cms.db` is writable. If you see "permission denied", run `sudo chown -R $USER:$USER data/`.
--   **Templates:** Ensure you haven't deleted core templates (`templates/admin/layout.html`, `templates/public/layout.html`).
-
-### "Connection Refused"
--   Ensure the container is running: `docker compose ps`
--   Ensure port `8080` is not used by another application.
-
-## 📁 Development
-
-To run locally without Docker (requires Go installed):
-
-```bash
-# Install dependencies
-go mod tidy
-
-# Run server
-go run main.go
-```
+> **Note:** If you see any errors after updating, run `docker compose down --volumes` to clear old cache.
 
 ---
 © 2026 SanjanaCMS

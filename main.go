@@ -205,6 +205,9 @@ func main() {
 	adminGroup.GET("/settings", handlers.SettingsPage)
 	adminGroup.POST("/settings", handlers.SettingsUpdate)
 
+	// Public Sitemap
+	e.GET("/sitemap.xml", handlers.Sitemap)
+
 	// Catch-all for public pages
 	e.GET("/*", handlers.PublicPage)
 
