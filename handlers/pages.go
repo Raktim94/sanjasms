@@ -34,6 +34,9 @@ func PageCreate(c echo.Context) error {
 		MetaTitle:       c.FormValue("meta_title"),
 		MetaDescription: c.FormValue("meta_description"),
 		MetaKeywords:    c.FormValue("meta_keywords"),
+		OGImage:         c.FormValue("og_image"),
+		CustomHead:      c.FormValue("custom_head"),
+		CustomBody:      c.FormValue("custom_body"),
 		IsPublished:     c.FormValue("is_published") == "on",
 	}
 
@@ -80,6 +83,9 @@ func PageUpdate(c echo.Context) error {
 	page.MetaTitle = c.FormValue("meta_title")
 	page.MetaDescription = c.FormValue("meta_description")
 	page.MetaKeywords = c.FormValue("meta_keywords")
+	page.OGImage = c.FormValue("og_image")
+	page.CustomHead = c.FormValue("custom_head")
+	page.CustomBody = c.FormValue("custom_body")
 	page.IsPublished = c.FormValue("is_published") == "on"
 
 	if err := models.DB.Save(&page).Error; err != nil {
@@ -101,7 +107,20 @@ func PageDelete(c echo.Context) error {
 }
 
 // Simple slug generator helper (placeholder)
+// Simple slug generator helper
 func GenerateSlug(title string) string {
-	// In real app, perform regex replace
-	return title // TODO: implment proper slugify
+	// Simple replacement: spaces -> dashes, lowercase
+	// Production apps should use a library like goslugify
+	slug := ""
+	for _, c := range title {
+		if (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') {
+			slug += string(c)
+		} else if c >= 'A' && c <= 'Z' {
+			slug += string(c + 32) // to lower
+		} else if c == ' ' || c == '-' {
+			slug += "-"
+		}
+	}
+	// TODO: Verify Uniqueness in DB loop
+	return slug
 }

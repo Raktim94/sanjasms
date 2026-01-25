@@ -5,51 +5,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{if .Title}}{{.Title}}{{else}}{{index .Settings "site_name"}}{{end}}</title>
-    <meta name="description" content="{{.MetaDescription}}">
-    <meta name="keywords" content="{{.MetaKeywords}}">
+    <title>{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else}}{{if .Title}}{{.Title}}{{else}}{{index .Settings
+        "site_title"}}{{end}}{{end}}</title>
+    <meta name="description" content="{{.Page.MetaDescription}}">
+    <meta name="keywords" content="{{.Page.MetaKeywords}}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else}}{{.Title}}{{end}}">
+    <meta property="og:description" content="{{.Page.MetaDescription}}">
+    {{if .Page.OGImage}}
+    <meta property="og:image" content="{{.Page.OGImage}}">{{end}}
+
     <link rel="icon" href="{{index .Settings " favicon_url"}}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <style>
-        /* Minimal Public Theme inheriting from variables */
         :root {
-            --primary: #714B67;
-            --text: #333;
-            --bg: #fff;
-            --light-bg: #f8f9fa;
-            --border: #e9ecef;
+            --primary: #007AFF;
+            /* Apple Blue */
+            --text-primary: #1D1D1F;
+            --text-secondary: #86868B;
+            --bg-color: #FFFFFF;
+            --nav-bg: rgba(255, 255, 255, 0.8);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
+            color: var(--text-primary);
+            background: var(--bg-color);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            color: var(--text);
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* Header */
         header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            padding: 15px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 0 40px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
             text-decoration: none;
-            color: var(--text);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .logo img {
@@ -57,80 +71,91 @@
             width: auto;
         }
 
+        nav {
+            display: flex;
+            gap: 30px;
+        }
+
         nav a {
-            margin-left: 25px;
             text-decoration: none;
-            color: #555;
+            color: var(--text-secondary);
+            font-size: 14px;
             font-weight: 500;
             transition: color 0.2s;
         }
 
-        nav a:hover {
-            color: var(--primary);
+        nav a:hover,
+        nav a.active {
+            color: var(--text-primary);
         }
 
-        main {
-            flex: 1;
-            padding: 40px 5%;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            box-sizing: border-box;
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
         }
 
-        footer {
-            background: var(--light-bg);
-            padding: 40px 5%;
-            text-align: center;
-            border-top: 1px solid var(--border);
-            margin-top: auto;
-            color: #666;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 24px;
-            background: var(--primary);
+        .btn-cta {
+            background: #4cd964;
+            /* Green button from reference */
             color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
+            transition: opacity 0.2s;
         }
 
-        .btn:hover {
+        .btn-cta:hover {
             opacity: 0.9;
         }
 
-        img {
-            max-width: 100%;
-            height: auto;
+        /* Main */
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
         }
 
-        iframe {
-            max-width: 100%;
+        /* Footer */
+        footer {
+            background: #F5F5F7;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
     </style>
-    <!-- Custom Header Code -->
-    {{if index .Settings "header_content"}}
-    {{index .Settings "header_content" | safe}}
-    {{end}}
+
+    <!-- Custom Head Injection -->
+    {{.Page.CustomHead | safe}}
 </head>
 
 <body>
     <header>
         <a href="/" class="logo">
-            {{if index .Settings "logo_url"}}<img src="{{index .Settings " logo_url"}}" alt="Logo">{{end}}
-            {{if index .Settings "site_name"}}{{index .Settings "site_name"}}{{else}}Odoo Lite{{end}}
+            {{if index .Settings "logo_url"}}<img src="{{index .Settings " logo_url"}}">{{end}}
+            <span>{{if index .Settings "site_title"}}{{index .Settings "site_title"}}{{else}}sanjanacms{{end}}</span>
         </a>
+
         <nav>
             {{range .Menus}}
             <a href="{{.URL}}">{{.Label}}</a>
             {{end}}
-            {{if not .Menus}}
-            <!-- Default admin link if no menu -->
-            <a href="/admin/login">Login</a>
-            {{end}}
         </nav>
+
+        <div class="header-actions">
+            <!-- Search icon placeholder -->
+            <svg width="16" height="16" fill="none" stroke="#333" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="M21 21l-4.35-4.35"></path>
+            </svg>
+            <a href="/admin/login" style="color:var(--text-primary); text-decoration:none; font-size:14px;">Login</a>
+        </div>
     </header>
 
     <main>
@@ -138,12 +163,15 @@
     </main>
 
     <footer>
-        {{if index .Settings "footer_content"}}
-        {{index .Settings "footer_content" | safe}}
+        {{if index .Settings "footer_text"}}
+        {{index .Settings "footer_text"}}
         {{else}}
-        <p>&copy; 2026 Odoo Lite CMS</p>
+        &copy; 2026 Odoo Lite CMS
         {{end}}
     </footer>
+
+    <!-- Custom Body Injection -->
+    {{.Page.CustomBody | safe}}
 </body>
 
 </html>

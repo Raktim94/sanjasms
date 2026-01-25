@@ -3,61 +3,133 @@
 {{end}}
 
 {{define "content"}}
-<h1>Media Manager</h1>
-
-<div class="card">
-    <h3>Upload New File</h3>
-    <form method="POST" action="/admin/media/upload" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit" class="btn">Upload</button>
-        <p style="font-size:0.8em; color:#666;">Max file size: 100MB.</p>
-    </form>
+<div class="flex-between mb-4">
+    <h1>Media Library</h1>
+    <label class="btn btn-primary" style="cursor: pointer;">
+        Upload File
+        <form method="POST" action="/admin/media/upload" enctype="multipart/form-data" style="display:none;"
+            onchange="this.submit()">
+            <input type="file" name="file">
+        </form>
+    </label>
 </div>
 
-<div class="card">
-    <h3>Library</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Preview</th>
-                <th>Filename</th>
-                <th>Size</th>
-                <th>Type</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{range .Files}}
-            <tr>
-                <td>
-                    <a href="{{.Path}}" target="_blank">
-                        <img src="{{.Path}}" style="max-height: 50px; max-width: 100px;">
-                    </a>
-                </td>
-                <td><a href="{{.Path}}" target="_blank">{{.Filename}}</a></td>
-                <td>{{.Size}} bytes</td>
-                <td>{{.MimeType}}</td>
-                <td>
-                    <button onclick="copyToClipboard('{{.Path}}')" style="cursor:pointer; padding:5px;">Copy
-                        URL</button>
-                    <form method="POST" action="/admin/media/{{.ID}}/delete" style="display:inline;"
-                        onsubmit="return confirm('Are you sure?');">
-                        <button type="submit"
-                            style="background:none; border:none; color:red; cursor:pointer; text-decoration:underline;">Delete</button>
-                    </form>
-                </td>
-            </tr>
+<p style="color:var(--text-secondary); margin-bottom: 20px;">Click 'Copy URL' to use files in your pages.</p>
+
+<div class="media-grid">
+    {{range .Files}}
+    <div class="media-card">
+        <div class="media-preview">
+            {{if eq .MimeType "image/jpeg" "image/png" "image/webp"}}
+            <img src="{{.URL}}" loading="lazy">
+            {{else}}
+            <div class="file-icon">📄</div>
             {{end}}
-        </tbody>
-    </table>
+        </div>
+        <div class="media-info">
+            <div class="filename" title="{{.Filename}}">{{.Filename}}</div>
+            <div class="file-meta">{{.Size}} bytes</div>
+            <div class="actions">
+                <button onclick="copyToClipboard('{{.URL}}')" class="btn-xs">Copy URL</button>
+                <form method="POST" action="/admin/media/{{.ID}}/delete"
+                    onsubmit="return confirm('Delete this file?');">
+                    <button type="submit" class="btn-xs danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{else}}
+    <p>No files uploaded yet.</p>
+    {{end}}
 </div>
+
+<style>
+    .media-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
+    }
+
+    .media-card {
+        background: white;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        transition: box-shadow 0.2s;
+    }
+
+    .media-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .media-preview {
+        height: 120px;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .media-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .file-icon {
+        font-size: 40px;
+    }
+
+    .media-info {
+        padding: 12px;
+    }
+
+    .filename {
+        font-weight: 500;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 4px;
+    }
+
+    .file-meta {
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-xs {
+        padding: 4px 8px;
+        font-size: 11px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        background: white;
+        cursor: pointer;
+    }
+
+    .btn-xs:hover {
+        background: #f5f5f7;
+    }
+
+    .btn-xs.danger {
+        color: var(--danger-color);
+        border-color: transparent;
+    }
+
+    .btn-xs.danger:hover {
+        background: #fff0f0;
+    }
+</style>
 
 <script>
     function copyToClipboard(text) {
-        // We want absolute URL? Or relative? User asked for "easy copying of the file URL"
-        // Usually absolute is better for sharing, relative for internal embedding.
-        // Let's assume relative for now, but maybe full if needed.
-        // Actually, window.location.origin
         const fullUrl = window.location.origin + text;
         navigator.clipboard.writeText(fullUrl).then(() => {
             alert("URL copied: " + fullUrl);

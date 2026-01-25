@@ -55,6 +55,7 @@ func MediaUpload(c echo.Context) error {
 	dbFile := models.File{
 		Filename: file.Filename, // Original name
 		Path:     "/uploads/" + filename,
+		URL:      "/uploads/" + filename, // Public URL
 		MimeType: file.Header.Get("Content-Type"),
 		Size:     file.Size,
 	}

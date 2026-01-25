@@ -3,81 +3,190 @@
 {{end}}
 
 {{define "content"}}
-<div style="display:flex; justify-content:space-between; align-items:center;">
+<div class="flex-between mb-4">
     <h1>{{if .IsNew}}New Page{{else}}Edit Page{{end}}</h1>
     <a href="/admin/pages" class="btn btn-secondary">Cancel</a>
 </div>
 
 <div class="card">
-    {{if .Error}}<p style="color:var(--danger);">{{.Error}}</p>{{end}}
+    {{if .Error}}<p style="color:var(--danger-color);">{{.Error}}</p>{{end}}
     <form method="POST" action="{{if .IsNew}}/admin/pages{{else}}/admin/pages/{{.Page.ID}}{{end}}">
-        <div style="display:flex; gap: 20px;">
-            <div style="flex:2;">
-                <label style="display:block; margin-bottom:5px; font-weight:600;">Page Title</label>
-                <input type="text" name="title" value="{{.Page.Title}}" required>
 
-                <label style="display:block; margin-bottom:5px; font-weight:600;">HTML Content</label>
-                <div class="code-editor-container">
-                    <div class="editor-toolbar">
-                        <button type="button" onclick="insertSnippet('youtube')">Insert YouTube</button>
-                        <button type="button" onclick="insertSnippet('map')">Insert Map</button>
-                        <button type="button" onclick="insertSnippet('script')">Insert Script</button>
-                        <button type="button" onclick="clearEditor()" class="btn-danger">Clear</button>
+        <!-- Tabs -->
+        <div style="border-bottom: 1px solid var(--border-color); margin-bottom: 20px;">
+            <button type="button" class="tab-btn active" onclick="switchTab('content')">Content</button>
+            <button type="button" class="tab-btn" onclick="switchTab('seo')">SEO & Metadata</button>
+            <button type="button" class="tab-btn" onclick="switchTab('code')">Custom Code</button>
+            <button type="button" class="tab-btn" onclick="switchTab('settings')">Settings</button>
+        </div>
+
+        <!-- Content Tab -->
+        <div id="tab-content" class="tab-pane active">
+            <label>Page Title</label>
+            <input type="text" name="title" id="pageTitle" value="{{.Page.Title}}" required oninput="updatePreview()">
+
+            <label>HTML Content</label>
+            <div class="editor-toolbar">
+                <button type="button" class="btn btn-secondary btn-sm"
+                    onclick="insertSnippet('youtube')">YouTube</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="insertSnippet('map')">Map</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="insertSnippet('script')">Script</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="insertSnippet('image')">Image
+                    ID</button>
+            </div>
+            <textarea id="html_content" name="html_content" class="code-editor"
+                style="min-height: 400px; font-family: monospace;">{{.Page.HTMLContent}}</textarea>
+        </div>
+
+        <!-- SEO Tab -->
+        <div id="tab-seo" class="tab-pane" style="display:none;">
+            <div style="display: flex; gap: 30px;">
+                <div style="flex: 1;">
+                    <label>URL Slug</label>
+                    <input type="text" name="slug" value="{{.Page.Slug}}" placeholder="e.g. about-us">
+
+                    <label>Meta Title</label>
+                    <input type="text" name="meta_title" id="metaTitle" value="{{.Page.MetaTitle}}"
+                        oninput="updatePreview()">
+
+                    <label>Meta Description</label>
+                    <textarea name="meta_description" id="metaDesc" style="height:100px;"
+                        oninput="updatePreview()">{{.Page.MetaDescription}}</textarea>
+
+                    <label>Meta Keywords</label>
+                    <input type="text" name="meta_keywords" value="{{.Page.MetaKeywords}}">
+
+                    <label>OG Image URL</label>
+                    <input type="text" name="og_image" value="{{.Page.OGImage}}">
+                </div>
+
+                <!-- Google Visualizer -->
+                <div style="flex: 1;">
+                    <label>Search Preview</label>
+                    <div class="google-preview">
+                        <div class="site-name">sanjanacms.com › ...</div>
+                        <div class="preview-title" id="previewTitle">Page Title</div>
+                        <div class="preview-desc" id="previewDesc">Page meta description will appear here...</div>
                     </div>
-                    <textarea id="html_content" name="html_content" class="code-editor">{{.Page.HTMLContent}}</textarea>
                 </div>
             </div>
-            <div style="flex:1; background:var(--light); padding:20px; border-radius:8px; height:fit-content;">
-                <h3 style="margin-top:0;">Publishing</h3>
-                <label>
-                    <input type="checkbox" name="is_published" {{if .Page.IsPublished}}checked{{end}}> Published
-                </label>
-
-                <h3 style="margin-top:20px;">SEO & Metadata</h3>
-
-                <label style="display:block; margin-bottom:5px; font-size:0.9em;">URL Slug</label>
-                <input type="text" name="slug" value="{{.Page.Slug}}" placeholder="e.g. about-us">
-
-                <label style="display:block; margin-bottom:5px; font-size:0.9em;">Meta Title</label>
-                <input type="text" name="meta_title" value="{{.Page.MetaTitle}}">
-
-                <label style="display:block; margin-bottom:5px; font-size:0.9em;">Meta Description</label>
-                <textarea name="meta_description" style="height:80px;">{{.Page.MetaDescription}}</textarea>
-
-                <label style="display:block; margin-bottom:5px; font-size:0.9em;">Meta Keywords</label>
-                <input type="text" name="meta_keywords" value="{{.Page.MetaKeywords}}">
-            </div>
         </div>
-        <div style="margin-top:20px; text-align:right; border-top:1px solid var(--border); padding-top:20px;">
-            <button type="submit" class="btn">Save Page</button>
+
+        <!-- Custom Code Tab -->
+        <div id="tab-code" class="tab-pane" style="display:none;">
+            <label>Custom Head (Scripts/Styles)</label>
+            <textarea name="custom_head" style="height:150px; font-family: monospace;">{{.Page.CustomHead}}</textarea>
+            <p style="font-size:0.8em; color:var(--text-secondary);">Injects into &lt;head&gt;. Good for Analytics, CSS.
+            </p>
+
+            <label>Custom Body (Scripts)</label>
+            <textarea name="custom_body" style="height:150px; font-family: monospace;">{{.Page.CustomBody}}</textarea>
+            <p style="font-size:0.8em; color:var(--text-secondary);">Injects end of &lt;body&gt;. Good for JS.</p>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="tab-settings" class="tab-pane" style="display:none;">
+            <label>
+                <input type="checkbox" name="is_published" {{if .Page.IsPublished}}checked{{end}}>
+                <span style="font-weight: 500;">Published</span>
+            </label>
+            <p style="color:var(--text-secondary);">Unpublished pages are only visible to admins.</p>
+        </div>
+
+        <div style="margin-top:24px; text-align:right;">
+            <button type="submit" class="btn btn-primary">Save Page</button>
         </div>
     </form>
 </div>
 
+<style>
+    .tab-btn {
+        background: none;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+        color: var(--accent-color);
+        border-bottom-color: var(--accent-color);
+    }
+
+    .tab-btn:hover {
+        color: var(--text-primary);
+    }
+
+    .google-preview {
+        background: white;
+        padding: 20px;
+        border: 1px solid #dfe1e5;
+        border-radius: 8px;
+        max-width: 600px;
+        font-family: arial, sans-serif;
+    }
+
+    .google-preview .site-name {
+        color: #202124;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .google-preview .preview-title {
+        color: #1a0dab;
+        font-size: 20px;
+        margin-bottom: 4px;
+        cursor: pointer;
+    }
+
+    .google-preview .preview-title:hover {
+        text-decoration: underline;
+    }
+
+    .google-preview .preview-desc {
+        color: #4d5156;
+        font-size: 14px;
+        line-height: 1.58;
+    }
+</style>
+
 <script>
-    const textarea = document.getElementById('html_content');
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+        document.getElementById('tab-' + tabName).style.display = 'block';
+
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    function updatePreview() {
+        const title = document.getElementById('metaTitle').value || document.getElementById('pageTitle').value || "Page Title";
+        const desc = document.getElementById('metaDesc').value || "Page meta description will appear here...";
+
+        document.getElementById('previewTitle').innerText = title;
+        document.getElementById('previewDesc').innerText = desc;
+    }
 
     function insertSnippet(type) {
+        const textarea = document.getElementById('html_content');
         let snippet = "";
-        if (type === 'youtube') {
-            snippet = '<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>';
-        } else if (type === 'map') {
-            snippet = '<iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
-        } else if (type === 'script') {
-            snippet = '<script>\n    console.log("Hello from Page");\n</script>';
-}
+        if (type === 'youtube') snippet = '<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>';
+        if (type === 'map') snippet = '<iframe src="https://www.google.com/maps/embed?..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
+        if (type === 'script') snippet = '<script>\n    // JS Code\n<\/script>';
+        if (type === 'image') snippet = '<img src="/uploads/FILENAME" alt="Description">';
 
-const start = textarea.selectionStart;
-const end = textarea.selectionEnd;
-const text = textarea.value;
-textarea.value = text.substring(0, start) + snippet + text.substring(end);
-textarea.focus();
-}
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        textarea.value = text.substring(0, start) + snippet + text.substring(end);
+        textarea.focus();
+    }
 
-function clearEditor() {
-if(confirm("Clear all content?")) {
-textarea.value = "";
-}
-}
+    // Init Logic
+    updatePreview();
 </script>
 {{end}}
