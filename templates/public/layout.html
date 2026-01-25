@@ -10,19 +10,15 @@
     <meta name="description" content="{{if .Page}}{{.Page.MetaDescription}}{{else}}{{index .Settings "
         meta_description"}}{{end}}">
     <meta name="keywords" content="{{if .Page}}{{.Page.MetaKeywords}}{{end}}">
-
     <!-- Open Graph -->
     <meta property="og:title"
         content="{{if .Page}}{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else}}{{.Title}}{{end}}{{else}}{{.Title}}{{end}}">
     <meta property="og:description" content="{{if .Page}}{{.Page.MetaDescription}}{{else}}{{index .Settings "
         meta_description"}}{{end}}">
-
     {{if .Page}}{{if .Page.OGImage}}
     <meta property="og:image" content="{{.Page.OGImage}}">{{end}}{{end}}
-
     <link rel="icon" href="{{index .Settings " favicon_url"}}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
     <style>
         :root {
             --primary: #007AFF;
@@ -129,7 +125,6 @@
             border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
     </style>
-
     <!-- Custom Head Injection -->
     {{if .Page}}{{.Page.CustomHead | safe}}{{end}}
 </head>
@@ -140,13 +135,9 @@
             {{if index .Settings "logo_url"}}<img src="{{index .Settings " logo_url"}}">{{end}}
             <span>{{if index .Settings "site_title"}}{{index .Settings "site_title"}}{{else}}sanjanacms{{end}}</span>
         </a>
-
         <nav>
-            {{range .Menus}}
-            <a href="{{.URL}}">{{.Label}}</a>
-            {{end}}
+            {{range .Menus}}<a href="{{.URL}}">{{.Label}}</a>{{end}}
         </nav>
-
         <div class="header-actions">
             <svg width="16" height="16" fill="none" stroke="#333" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8"></circle>
@@ -155,19 +146,10 @@
             <a href="/admin/login" style="color:var(--text-primary); text-decoration:none; font-size:14px;">Login</a>
         </div>
     </header>
-
-    <main>
-        {{template "content" .}}
-    </main>
-
+    <main>{{template "content" .}}</main>
     <footer>
-        {{if index .Settings "footer_text"}}
-        {{index .Settings "footer_text"}}
-        {{else}}
-        &copy; 2026 sanjanacms
-        {{end}}
+        {{if index .Settings "footer_text"}}{{index .Settings "footer_text"}}{{else}}&copy; 2026 sanjanacms{{end}}
     </footer>
-
     <!-- Custom Body Injection -->
     {{if .Page}}{{.Page.CustomBody | safe}}{{end}}
 </body>
