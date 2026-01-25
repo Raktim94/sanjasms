@@ -94,30 +94,48 @@ func main() {
 
 		// Public Pages
 		log.Println("Globbing templates/public/...")
-		publicCommon := []string{"templates/public/layout.html"}
+		publicLayout := "templates/public/layout.html"
 		publicFiles, err := filepath.Glob("templates/public/*.html")
 		if err != nil {
 			log.Printf("ERROR globbing public templates: %v", err)
 		} else {
 			for _, file := range publicFiles {
+				// We need to parse layout.html as itself to make "public_layout" available
+				// But we also need to parse it alongside page.html so page.html can "see" it.
+
 				if strings.Contains(file, "layout.html") {
 					continue
 				}
+
 				fileName := filepath.Base(file)
 				tmpl := template.New(fileName).Funcs(funcMap)
-				if len(publicCommon) > 0 {
-					// Check existence because public layout might not exist yet
-					if _, err := os.Stat(publicCommon[0]); err == nil {
-						if _, err := tmpl.ParseFiles(publicCommon...); err != nil {
-							log.Printf("Error parsing public layout for %s: %v", fileName, err)
-						}
-					} else {
-						log.Printf("Public layout not found: %s", publicCommon[0])
-					}
+
+				// Parse layout FIRST, then the file.
+				// The order matters. layout.html defines "public_layout".
+				filesToParse := []string{publicLayout, file}
+
+				// Verify layout exists
+				if _, err := os.Stat(publicLayout); err != nil {
+					log.Printf("CRITICAL: Public layout not found at %s", publicLayout)
+					continue
 				}
-				tmpl.ParseFiles(file)
+
+				if _, err := tmpl.ParseFiles(filesToParse...); err != nil {
+					log.Printf("Error parsing public template set for %s: %v", fileName, err)
+					continue
+				}
+
 				t.templates[fileName] = tmpl
-				log.Printf("Registered template: %s", fileName)
+				log.Printf("Registered public template: %s (with layout)", fileName)
+			}
+
+			// Also register the 404 page explicitly if it wasn't caught above
+			if _, ok := t.templates["404.html"]; !ok {
+				tmpl := template.New("404.html").Funcs(funcMap)
+				if _, err := tmpl.ParseFiles(publicLayout, "templates/public/404.html"); err == nil {
+					t.templates["404.html"] = tmpl
+					log.Printf("Registered 404 template explicitly")
+				}
 			}
 		}
 
