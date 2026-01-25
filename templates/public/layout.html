@@ -5,9 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{if .Page}}{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else}}{{if .Title}}{{.Title}}{{else}}{{index .Settings
-        "site_title"}}{{end}}{{end}}{{else}}{{if .Title}}{{.Title}}{{else}}{{index .Settings
-        "site_title"}}{{end}}{{end}}</title>
+    <title>{{if .Page}}{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else if .Title}}{{.Title}}{{else}}{{index .Settings
+        "site_title"}}{{end}}{{else if .Title}}{{.Title}}{{else}}{{index .Settings "site_title"}}{{end}}</title>
     <meta name="description" content="{{if .Page}}{{.Page.MetaDescription}}{{else}}{{index .Settings "
         meta_description"}}{{end}}">
     <meta name="keywords" content="{{if .Page}}{{.Page.MetaKeywords}}{{end}}">
@@ -27,7 +26,6 @@
     <style>
         :root {
             --primary: #007AFF;
-            /* Apple Blue */
             --text-primary: #1D1D1F;
             --text-secondary: #86868B;
             --bg-color: #FFFFFF;
@@ -45,7 +43,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Header */
         header {
             background: var(--nav-bg);
             backdrop-filter: blur(20px);
@@ -102,7 +99,6 @@
 
         .btn-cta {
             background: #4cd964;
-            /* Green button from reference */
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
@@ -116,7 +112,6 @@
             opacity: 0.9;
         }
 
-        /* Main */
         main {
             flex: 1;
             width: 100%;
@@ -125,7 +120,6 @@
             padding: 60px 20px;
         }
 
-        /* Footer */
         footer {
             background: #F5F5F7;
             padding: 40px;
@@ -154,7 +148,6 @@
         </nav>
 
         <div class="header-actions">
-            <!-- Search icon placeholder -->
             <svg width="16" height="16" fill="none" stroke="#333" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="M21 21l-4.35-4.35"></path>
@@ -171,7 +164,7 @@
         {{if index .Settings "footer_text"}}
         {{index .Settings "footer_text"}}
         {{else}}
-        &copy; 2026 Odoo Lite CMS
+        &copy; 2026 sanjanacms
         {{end}}
     </footer>
 
