@@ -18,6 +18,8 @@ func ConnectDatabase() {
 		dbPath = "data/cms.db"
 	}
 
+	log.Printf("Initializing database connection at: %s", dbPath)
+
 	// Ensure directory exists
 	// os.MkdirAll("data", 0755) // Docker setup handles /data volume, but good for local dev
 
@@ -35,7 +37,10 @@ func ConnectDatabase() {
 	}
 
 	if err != nil {
-		log.Fatalf("Failed to connect to database after retries: %v", err)
+		log.Printf("CRITICAL: Failed to connect to database after retries: %v", err)
+		// log.Fatal would exit, but we want to see if we can keep container alive to read logs if needed,
+		// but app needs DB. So Fatal is appropriate, but let's make sure it's flushed.
+		log.Fatal(err)
 	}
 
 	err = database.AutoMigrate(&User{}, &Page{}, &Menu{}, &Setting{}, &File{})
@@ -44,6 +49,7 @@ func ConnectDatabase() {
 	}
 
 	DB = database
+	log.Println("Database connection established and migrated.")
 
 	// Initialize Default Data
 	initializeDefaults(database)
