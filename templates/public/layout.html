@@ -5,16 +5,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else}}{{if .Title}}{{.Title}}{{else}}{{index .Settings
+    <title>{{if .Page}}{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else}}{{if .Title}}{{.Title}}{{else}}{{index .Settings
+        "site_title"}}{{end}}{{end}}{{else}}{{if .Title}}{{.Title}}{{else}}{{index .Settings
         "site_title"}}{{end}}{{end}}</title>
-    <meta name="description" content="{{.Page.MetaDescription}}">
-    <meta name="keywords" content="{{.Page.MetaKeywords}}">
+    <meta name="description" content="{{if .Page}}{{.Page.MetaDescription}}{{else}}{{index .Settings "
+        meta_description"}}{{end}}">
+    <meta name="keywords" content="{{if .Page}}{{.Page.MetaKeywords}}{{end}}">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else}}{{.Title}}{{end}}">
-    <meta property="og:description" content="{{.Page.MetaDescription}}">
-    {{if .Page.OGImage}}
-    <meta property="og:image" content="{{.Page.OGImage}}">{{end}}
+    <meta property="og:title"
+        content="{{if .Page}}{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else}}{{.Title}}{{end}}{{else}}{{.Title}}{{end}}">
+    <meta property="og:description" content="{{if .Page}}{{.Page.MetaDescription}}{{else}}{{index .Settings "
+        meta_description"}}{{end}}">
+
+    {{if .Page}}{{if .Page.OGImage}}
+    <meta property="og:image" content="{{.Page.OGImage}}">{{end}}{{end}}
 
     <link rel="icon" href="{{index .Settings " favicon_url"}}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -132,7 +137,7 @@
     </style>
 
     <!-- Custom Head Injection -->
-    {{.Page.CustomHead | safe}}
+    {{if .Page}}{{.Page.CustomHead | safe}}{{end}}
 </head>
 
 <body>
@@ -171,7 +176,7 @@
     </footer>
 
     <!-- Custom Body Injection -->
-    {{.Page.CustomBody | safe}}
+    {{if .Page}}{{.Page.CustomBody | safe}}{{end}}
 </body>
 
 </html>
