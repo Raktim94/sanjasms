@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 
 	"odoo-lite-cms/handlers"
@@ -32,8 +33,22 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 func main() {
 	e := echo.New()
 
-	// Generic middleware
-	e.Use(echoMiddleware.Recover())
+	// Custom panic handler for debugging
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			defer func() {
+				if r := recover(); r != nil {
+					err, ok := r.(error)
+					if !ok {
+						err = fmt.Errorf("%v", r)
+					}
+					log.Printf("PANIC RECOVERED: %v\nStack: %s", err, debug.Stack())
+					c.Error(err)
+				}
+			}()
+			return next(c)
+		}
+	})
 	e.Use(echoMiddleware.Logger())
 
 	// Template Registry
