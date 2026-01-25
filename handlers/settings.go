@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"odoo-lite-cms/models"
 
@@ -10,7 +11,10 @@ import (
 // Helper to get settings as map
 func GetSettingsMap() map[string]string {
 	var settings []models.Setting
-	models.DB.Find(&settings)
+	if err := models.DB.Find(&settings).Error; err != nil {
+		log.Printf("Error fetching settings: %v", err)
+		return make(map[string]string)
+	}
 
 	settingsMap := make(map[string]string)
 	for _, s := range settings {
