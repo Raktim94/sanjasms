@@ -1,7 +1,7 @@
 services:
   cms:
     build: .
-    container_name: odoo-lite-cms
+    container_name: sanjanacms
     ports:
       - "8080:8080"
     volumes:

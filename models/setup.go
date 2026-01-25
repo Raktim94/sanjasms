@@ -70,7 +70,7 @@ func initializeDefaults(db *gorm.DB) {
 	// 2. Default Settings
 	defaults := map[string]string{
 		"site_title":       "sanjanacms",
-		"footer_text":      "Odoo Lite © 2026 Odoo Lite CMS",
+		"footer_text":      "sanjanacms © 2026 sanjanacms",
 		"primary_color":    "#007AFF", // Apple Blue
 		"meta_description": "A lightweight CMS",
 	}
