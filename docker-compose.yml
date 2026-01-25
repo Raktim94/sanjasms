@@ -3,7 +3,7 @@ services:
     build: .
     container_name: sanjanacms
     ports:
-      - "8090:8080"
+      - "2512:8080"
     volumes:
       - cms_data:/data
       - ./static/uploads:/app/static/uploads
