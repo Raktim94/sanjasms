@@ -1,56 +1,48 @@
-# Odoo Lite CMS
+# sanjanacms (Odoo Lite CMS)
 
-A lightweight, self-hosted CMS built with Go and SQLite. Docker-based and designed for speed and simplicity.
+A lightweight, production-ready, self-hosted CMS designed to replicate the core website building features of Odoo. Built with Go (Echo), SQLite, and Docker.
 
-## Features
-- **Admin Dashboard**: Manage your site content securely.
-- **Page Management**: Create unlimited pages with custom HTML, clean URLs, and SEO metadata.
-- **Menu System**: Dynamic, reorderable navigation menus.
-- **File Uploads**: Admin media manager for images and files (Local storage).
-- **Site Settings**: Customize title, logo, header, and footer.
-- **No Dependencies**: Runs as a single binary or container. No external database required.
+## 🚀 Quick Start (Docker)
 
-## Quick Start (Docker)
-
-1.  Clone the repository:
+1.  **Start the server:**
     ```bash
-    git clone <repository-url>
-    cd odoo-lite-cms
+    docker compose up -d --build
     ```
 
-2.  Start the service:
-    ```bash
-    docker compose up -d
-    ```
+2.  **Access the Admin Panel:**
+    Open [http://localhost:8080/admin/login](http://localhost:8080/admin/login)
 
-3.  Access the admin panel:
-    Open `http://localhost:8080/admin/setup` in your browser.
-    Create your first admin account.
+    **Default Credentials:**
+    -   **Email:** `hi@RAKTIMranjit.in`
+    -   **Password:** `hi@raktim`
 
-4.  Login and start building!
+3.  **View the Website:**
+    Open [http://localhost:8080](http://localhost:8080)
 
-## Development
+## ✨ Features
 
-Prerequisites: Go 1.22+.
+-   **Lightweight & Fast:** Built on Go and SQLite.
+-   **Docker Ready:** Simple deployment with `docker-compose`.
+-   **Page Builder:** Create static and landing pages with custom HTML.
+-   **Menu Management:** Drag-and-drop menu builder (nested menus supported).
+-   **Media Library:** Upload images and files.
+-   **SEO Tools:** Manage Meta Titles, Descriptions, OG Tags, and more.
+-   **Premium UI:** "Apple-like" aesthetic for the admin interface.
 
-1.  Install dependencies:
-    ```bash
-    go mod tidy
-    ```
+## 🛠 Tech Stack
 
-2.  Run locally:
-    ```bash
-    go run main.go
-    ```
+-   **Backend:** Golang (Echo Framework)
+-   **Database:** SQLite (with GORM)
+-   **Frontend:** Server-Side Rendered HTML (Go Templates) + Vanilla CSS (Premium Design)
+-   **Deployment:** Docker (Alpine based)
 
-3.  Access at `http://localhost:8080`.
+## 📁 Project Structure
 
-## Architecture
-- **Language**: Go
-- **Framework**: Echo
-- **Database**: SQLite (Pure Go via `glebarez/sqlite`)
-- **ORM**: GORM
-- **Frontend**: Server-side rendered HTML templates (Go `html/template`).
+-   `/handlers`: HTTP request handlers
+-   `/models`: Database models (GORM)
+-   `/static`: CSS, JS, and user uploads
+-   `/templates`: HTML templates
+-   `main.go`: Application entry point
 
-## License
-MIT
+---
+Odoo Lite © 2026 Odoo Lite CMS

@@ -5,172 +5,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}} - Odoo Lite CMS Admin</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            background: #fdfdfd;
-        }
-
-        .sidebar {
-            width: 250px;
-            background: #2b3e50;
-            color: white;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar .brand {
-            padding: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            border-bottom: 1px solid #3e5366;
-            background: #223140;
-        }
-
-        .sidebar nav {
-            flex: 1;
-            padding-top: 20px;
-        }
-
-        .sidebar a {
-            display: block;
-            padding: 12px 20px;
-            color: #b8c7d9;
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: #3e5366;
-            color: white;
-        }
-
-        .content-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .topbar {
-            background: white;
-            padding: 10px 20px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .topbar a {
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9em;
-            margin-left: 20px;
-        }
-
-        .main-content {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 4px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        h1 {
-            margin-top: 0;
-            color: #333;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            background: #714B67;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            display: inline-block;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background: #5d3d54;
-        }
-
-        .btn-secondary {
-            background: #eee;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #ddd;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            background: #f9f9f9;
-            color: #555;
-            font-weight: 600;
-        }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8em;
-            background: #e0e0e0;
-            color: #555;
-        }
-
-        .badge.success {
-            background: #dff0d8;
-            color: #3c763d;
-        }
-    </style>
+    <title>{{.Title}} - sanjanacms Admin</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
-    <div class="sidebar">
-        <div class="brand">Odoo Lite CMS</div>
-        <nav>
-            <a href="/admin/dashboard" class="{{if eq .Active " dashboard"}}active{{end}}">Dashboard</a>
-            <a href="/admin/pages" class="{{if eq .Active " pages"}}active{{end}}">Pages</a>
-            <a href="/admin/menus" class="{{if eq .Active " menus"}}active{{end}}">Menus</a>
-            <a href="/admin/media" class="{{if eq .Active " media"}}active{{end}}">Media</a>
-            <a href="/admin/settings" class="{{if eq .Active " settings"}}active{{end}}">Settings</a>
-        </nav>
-    </div>
-    <div class="content-area">
-        <div class="topbar">
-            <span>Admin User</span>
-            <a href="/admin/logout">Logout</a>
-            <a href="/" target="_blank">View Website ↗</a>
-        </div>
-        <div class="main-content">
-            {{template "content" .}}
-        </div>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="brand">sanjanacms</div>
+            <nav>
+                <a href="/admin/dashboard" class="{{if eq .Active " dashboard"}}active{{end}}">Dashboard</a>
+                <a href="/admin/pages" class="{{if eq .Active " pages"}}active{{end}}">Pages</a>
+                <a href="/admin/menus" class="{{if eq .Active " menus"}}active{{end}}">Menus</a>
+                <a href="/admin/media" class="{{if eq .Active " media"}}active{{end}}">Media</a>
+                <a href="/admin/settings" class="{{if eq .Active " settings"}}active{{end}}">Settings</a>
+            </nav>
+        </aside>
+        <main class="content-area">
+            <header class="topbar">
+                <div class="user-info">Admin User</div>
+                <a href="/" target="_blank">View Website ↗</a>
+                <a href="/admin/logout" style="color: var(--danger-color);">Logout</a>
+            </header>
+            <div class="main-content">
+                {{template "content" .}}
+            </div>
+        </main>
     </div>
 </body>
 

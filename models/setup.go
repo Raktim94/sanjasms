@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/glebarez/sqlite"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -43,4 +44,41 @@ func ConnectDatabase() {
 	}
 
 	DB = database
+
+	// Initialize Default Data
+	initializeDefaults(database)
+}
+
+func initializeDefaults(db *gorm.DB) {
+	// 1. Default User
+	var count int64
+	db.Model(&User{}).Count(&count)
+	if count == 0 {
+		hash, _ := bcrypt.GenerateFromPassword([]byte("hi@raktim"), bcrypt.DefaultCost)
+		user := User{
+			Email:        "hi@RAKTIMranjit.in",
+			PasswordHash: string(hash),
+			IsAdmin:      true,
+		}
+		if err := db.Create(&user).Error; err != nil {
+			log.Printf("Failed to create default user: %v", err)
+		} else {
+			log.Println("Default user 'hi@RAKTIMranjit.in' created.")
+		}
+	}
+
+	// 2. Default Settings
+	defaults := map[string]string{
+		"site_title":       "sanjanacms",
+		"footer_text":      "Odoo Lite © 2026 Odoo Lite CMS",
+		"primary_color":    "#007AFF", // Apple Blue
+		"meta_description": "A lightweight CMS",
+	}
+
+	for key, value := range defaults {
+		var setting Setting
+		if err := db.Where("key = ?", key).First(&setting).Error; err != nil {
+			db.Create(&Setting{Key: key, Value: value})
+		}
+	}
 }

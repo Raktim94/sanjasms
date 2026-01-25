@@ -5,8 +5,11 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./data:/data
+      - cms_data:/data
       - ./static/uploads:/app/static/uploads
     environment:
       - DB_Path=/data/cms.db
     restart: always
+
+volumes:
+  cms_data:
