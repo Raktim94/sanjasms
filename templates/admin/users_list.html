@@ -1,0 +1,42 @@
+{{define "users_list.html"}}
+{{template "admin_layout" .}}
+{{end}}
+
+{{define "content"}}
+<div class="header-with-action">
+    <h1>User Management</h1>
+    <a href="/admin/users/new" class="btn">Add New Admin</a>
+</div>
+
+<div class="card">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Users}}
+            <tr>
+                <td>{{.Email}}</td>
+                <td>
+                    <span class="badge {{if .IsAdmin}}badge-success{{else}}badge-secondary{{end}}">
+                        {{if .IsAdmin}}Administrator{{else}}User{{end}}
+                    </span>
+                </td>
+                <td>{{.CreatedAt.Format "Jan 02, 2006"}}</td>
+                <td class="actions">
+                    <form action="/admin/users/{{.ID}}/delete" method="POST" style="display:inline;"
+                        onsubmit="return confirm('Delete this user? This cannot be undone.');">
+                        <button type="submit" class="btn-icon btn-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+{{end}}

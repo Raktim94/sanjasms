@@ -1,0 +1,33 @@
+{{define "users_form.html"}}
+{{template "admin_layout" .}}
+{{end}}
+
+{{define "content"}}
+<div class="header-with-action">
+    <h1>Add New User</h1>
+    <a href="/admin/users" class="btn btn-secondary">Back to List</a>
+</div>
+
+<div class="card">
+    <form action="/admin/users" method="POST" class="admin-form">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="is_admin" name="is_admin" checked>
+            <label for="is_admin">Grant Administrator Access</label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Create User</button>
+        </div>
+    </form>
+</div>
+{{end}}

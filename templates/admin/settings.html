@@ -3,35 +3,66 @@
 {{end}}
 
 {{define "content"}}
-<h1>Site Settings</h1>
+<div class="header-with-action">
+    <h1>Site Settings</h1>
+</div>
 
 <div class="card">
-    <form method="POST" action="/admin/settings">
-        <h3>General Info</h3>
-        <label style="display:block; margin-bottom:5px;">Site Name</label>
-        <input type="text" name="site_name" value="{{index .Settings " site_name"}}"
-            style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
+    <form method="POST" action="/admin/settings" class="admin-form">
+        <section class="form-section">
+            <h3>Website Identity</h3>
+            <div class="form-group">
+                <label for="site_title">Website Title</label>
+                <input type="text" id="site_title" name="site_title" value="{{index .Settings " site_title"}}" required>
+            </div>
 
-        <label style="display:block; margin-bottom:5px;">Logo URL</label>
-        <input type="text" name="logo_url" value="{{index .Settings " logo_url"}}" placeholder="/static/uploads/..."
-            style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
-        <p style="font-size:0.8em; color:#666;">Upload logo in Media manager and paste URL here.</p>
+            <div class="form-group">
+                <label for="meta_description">SEO Meta Description (Default)</label>
+                <textarea id="meta_description" name="meta_description"
+                    rows="3">{{index .Settings "meta_description"}}</textarea>
+            </div>
+        </section>
 
-        <label style="display:block; margin-bottom:5px;">Favicon URL</label>
-        <input type="text" name="favicon_url" value="{{index .Settings " favicon_url"}}"
-            style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
+        <section class="form-section">
+            <h3>Branding & Assets</h3>
+            <div class="form-group">
+                <label for="logo_url">Logo URL</label>
+                <div class="input-with-hint">
+                    <input type="text" id="logo_url" name="logo_url" value="{{index .Settings " logo_url"}}"
+                        placeholder="/static/uploads/logo.png">
+                    <small>Upload your logo in the Media library first.</small>
+                </div>
+            </div>
 
-        <h3>Header & Footer</h3>
-        <label style="display:block; margin-bottom:5px;">Custom Header Content (HTML)</label>
-        <textarea name="header_content"
-            style="width:100%; height:100px; padding:8px; margin-bottom:15px; border:1px solid #ddd;">{{index .Settings "header_content"}}</textarea>
+            <div class="form-group">
+                <label for="favicon_url">Favicon URL</label>
+                <input type="text" id="favicon_url" name="favicon_url" value="{{index .Settings " favicon_url"}}"
+                    placeholder="/favicon.ico">
+            </div>
 
-        <label style="display:block; margin-bottom:5px;">Custom Footer Content (HTML)</label>
-        <textarea name="footer_content"
-            style="width:100%; height:100px; padding:8px; margin-bottom:15px; border:1px solid #ddd;">{{index .Settings "footer_content"}}</textarea>
+            <div class="form-group">
+                <label for="primary_color">Primary Brand Color</label>
+                <input type="color" id="primary_color" name="primary_color" value="{{if index .Settings "
+                    primary_color"}}{{index .Settings "primary_color" }}{{else}}#007AFF{{end}}">
+            </div>
+        </section>
 
-        <div style="margin-top:20px; text-align:right;">
-            <button type="submit" class="btn">Save Settings</button>
+        <section class="form-section">
+            <h3>Content & Legal</h3>
+            <div class="form-group">
+                <label for="footer_text">Footer Text</label>
+                <input type="text" id="footer_text" name="footer_text" value="{{index .Settings " footer_text"}}">
+            </div>
+
+            <div class="form-group">
+                <label for="robots_txt">Robots.txt Content</label>
+                <textarea id="robots_txt" name="robots_txt" rows="5">{{index .Settings "robots_txt"}}</textarea>
+                <small>Control how search engines crawl your site.</small>
+            </div>
+        </section>
+
+        <div class="form-actions" style="margin-top: 30px;">
+            <button type="submit" class="btn">Save All Settings</button>
         </div>
     </form>
 </div>

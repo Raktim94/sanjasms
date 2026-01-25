@@ -1,0 +1,35 @@
+{{define "embeds_form.html"}}
+{{template "admin_layout" .}}
+{{end}}
+
+{{define "content"}}
+<div class="header-with-action">
+    <h1>{{if .Embed}}Edit Embed{{else}}New Embed{{end}}</h1>
+    <a href="/admin/embeds" class="btn btn-secondary">Back to List</a>
+</div>
+
+<div class="card">
+    <form action="{{if .Embed}}/admin/embeds/{{.Embed.ID}}{{else}}/admin/embeds{{end}}" method="POST"
+        class="admin-form">
+        <div class="form-group">
+            <label for="Name">Name (e.g., Google Analytics, YouTube Script)</label>
+            <input type="text" id="Name" name="Name" value="{{if .Embed}}{{.Embed.Name}}{{end}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="Code">Embed Code (HTML/JS/IFrame)</label>
+            <textarea id="Code" name="Code" rows="10" required>{{if .Embed}}{{.Embed.Code}}{{end}}</textarea>
+            <small>Paste your tracking scripts, pixel codes, or interactive widget snippets here.</small>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="is_active" name="is_active" {{if or (not .Embed) .Embed.IsActive}}checked{{end}}>
+            <label for="is_active">Active (Enable this embed globally)</label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Save Embed</button>
+        </div>
+    </form>
+</div>
+{{end}}

@@ -19,4 +19,20 @@ type Page struct {
 	CustomBody string // Scripts for end of <body>
 
 	IsPublished bool `gorm:"default:false"`
+	Blocks      []PageBlock
+}
+
+type PageBlock struct {
+	gorm.Model
+	PageID   uint
+	Type     string // text, image, button, embed, html
+	Content  string `gorm:"type:text"`
+	Sequence int
+}
+
+type Embed struct {
+	gorm.Model
+	Name     string `gorm:"not null"`
+	Code     string `gorm:"not null"` // HTML/JS/IFrame code
+	IsActive bool   `gorm:"default:true"`
 }

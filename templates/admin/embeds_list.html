@@ -1,0 +1,45 @@
+{{define "embeds_list.html"}}
+{{template "admin_layout" .}}
+{{end}}
+
+{{define "content"}}
+<div class="header-with-action">
+    <h1>Embed Manager</h1>
+    <a href="/admin/embeds/new" class="btn">Add New Embed</a>
+</div>
+
+<div class="card">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Embeds}}
+            <tr>
+                <td>{{.Name}}</td>
+                <td>
+                    <span class="badge {{if .IsActive}}badge-success{{else}}badge-secondary{{end}}">
+                        {{if .IsActive}}Active{{else}}Inactive{{end}}
+                    </span>
+                </td>
+                <td class="actions">
+                    <a href="/admin/embeds/{{.ID}}/edit" class="btn-icon">Edit</a>
+                    <form action="/admin/embeds/{{.ID}}/delete" method="POST" style="display:inline;"
+                        onsubmit="return confirm('Delete this embed?');">
+                        <button type="submit" class="btn-icon btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="3" style="text-align:center;">No embeds found. Add one to get started.</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+{{end}}

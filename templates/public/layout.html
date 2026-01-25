@@ -125,6 +125,8 @@
             border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
     </style>
+    <!-- Embeds Injection -->
+    {{range .Embeds}}{{if .IsActive}}{{.Code | safe}}{{end}}{{end}}
     <!-- Custom Head Injection -->
     {{if .Page}}{{.Page.CustomHead | safe}}{{end}}
 </head>

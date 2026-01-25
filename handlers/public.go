@@ -40,14 +40,19 @@ func PublicPage(c echo.Context) error {
 		log.Printf("Page not found in DB: %s (error: %v)", slug, err)
 
 		// Render 404 with safe context
-		// IMPORTANT: Pass a nil Page to force template fallback logic
+		var embeds []models.Embed
+		models.DB.Where("is_active = ?", true).Find(&embeds)
 		return c.Render(http.StatusNotFound, "404.html", map[string]interface{}{
 			"Title":    "Page Not Found",
 			"Settings": settings,
 			"Menus":    menus,
 			"Page":     nil,
+			"Embeds":   embeds,
 		})
 	}
+
+	var embeds []models.Embed
+	models.DB.Where("is_active = ?", true).Find(&embeds)
 
 	log.Printf("Rendering page: %s with template 'page.html'", page.Title)
 
@@ -59,6 +64,7 @@ func PublicPage(c echo.Context) error {
 		"Page":            page,
 		"Menus":           menus,
 		"Settings":        settings,
+		"Embeds":          embeds,
 	})
 
 	if err != nil {

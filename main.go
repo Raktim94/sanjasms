@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"runtime/debug"
@@ -215,12 +216,30 @@ func main() {
 	adminGroup.POST("/media/upload", handlers.MediaUpload)
 	adminGroup.POST("/media/:id/delete", handlers.MediaDelete)
 
+	// Embed Routes
+	adminGroup.GET("/embeds", handlers.EmbedList)
+	adminGroup.GET("/embeds/new", handlers.EmbedNew)
+	adminGroup.POST("/embeds", handlers.EmbedCreate)
+	adminGroup.GET("/embeds/:id/edit", handlers.EmbedEdit)
+	adminGroup.POST("/embeds/:id", handlers.EmbedUpdate)
+	adminGroup.POST("/embeds/:id/delete", handlers.EmbedDelete)
+
+	// User Routes
+	adminGroup.GET("/users", handlers.UserList)
+	adminGroup.GET("/users/new", handlers.UserNew)
+	adminGroup.POST("/users", handlers.UserCreate)
+	adminGroup.POST("/users/:id/delete", handlers.UserDelete)
+
 	// Settings Routes
 	adminGroup.GET("/settings", handlers.SettingsPage)
 	adminGroup.POST("/settings", handlers.SettingsUpdate)
 
 	// Public Sitemap
 	e.GET("/sitemap.xml", handlers.Sitemap)
+	e.GET("/robots.txt", func(c echo.Context) error {
+		settings := handlers.GetSettingsMap()
+		return c.String(http.StatusOK, settings["robots_txt"])
+	})
 
 	// Catch-all for public pages
 	e.GET("/*", handlers.PublicPage)

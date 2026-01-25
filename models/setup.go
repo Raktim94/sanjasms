@@ -43,7 +43,7 @@ func ConnectDatabase() {
 		log.Fatal(err)
 	}
 
-	err = database.AutoMigrate(&User{}, &Page{}, &Menu{}, &Setting{}, &File{})
+	err = database.AutoMigrate(&User{}, &Page{}, &Menu{}, &Setting{}, &File{}, &Embed{}, &PageBlock{})
 	if err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
@@ -79,6 +79,7 @@ func initializeDefaults(db *gorm.DB) {
 		"footer_text":      "sanjanacms © 2026 sanjanacms",
 		"primary_color":    "#007AFF", // Apple Blue
 		"meta_description": "A lightweight CMS",
+		"robots_txt":       "User-agent: *\nAllow: /",
 	}
 
 	for key, value := range defaults {

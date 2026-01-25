@@ -38,7 +38,7 @@ func SettingsPage(c echo.Context) error {
 }
 
 func SettingsUpdate(c echo.Context) error {
-	keys := []string{"site_name", "logo_url", "favicon_url", "header_content", "footer_content"}
+	keys := []string{"site_title", "logo_url", "favicon_url", "primary_color", "footer_text", "meta_description", "robots_txt"}
 
 	for _, key := range keys {
 		value := c.FormValue(key)
