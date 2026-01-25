@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 	"odoo-lite-cms/models"
 	"strings"
@@ -18,9 +19,12 @@ func PublicPage(c echo.Context) error {
 	// Clean leading slash
 	slug = strings.TrimPrefix(slug, "/")
 
+	log.Printf("PublicPage requested: slug='%s'", slug)
+
 	var page models.Page
 	// Find published page by slug
 	if err := models.DB.Where("slug = ? AND is_published = ?", slug, true).First(&page).Error; err != nil {
+		log.Printf("Page not found in DB: %s (error: %v)", slug, err)
 		return c.Render(http.StatusNotFound, "404.html", map[string]interface{}{
 			"Title":    "Page Not Found",
 			"Settings": GetSettingsMap(), // Need settings for header/footer
@@ -32,7 +36,9 @@ func PublicPage(c echo.Context) error {
 	menus := GetPublicMenus()
 	settings := GetSettingsMap()
 
-	return c.Render(http.StatusOK, "page.html", map[string]interface{}{
+	log.Printf("Rendering page: %s with template 'page.html'", page.Title)
+
+	err := c.Render(http.StatusOK, "page.html", map[string]interface{}{
 		"Title":           page.MetaTitle, // Fallback to Title if empty handled in template
 		"MetaDescription": page.MetaDescription,
 		"MetaKeywords":    page.MetaKeywords,
@@ -41,6 +47,12 @@ func PublicPage(c echo.Context) error {
 		"Menus":           menus,
 		"Settings":        settings,
 	})
+
+	if err != nil {
+		log.Printf("ERROR rendering template 'page.html': %v", err)
+		return err
+	}
+	return nil
 }
 
 func GetPublicMenus() []models.Menu {
