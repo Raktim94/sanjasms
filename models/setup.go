@@ -155,6 +155,13 @@ func initializeDefaults(db *gorm.DB) {
 		if err := db.Where("slug = ?", p.Slug).First(&page).Error; err != nil {
 			db.Create(&p)
 			log.Printf("Created demo page: %s", p.Slug)
+		} else {
+			// Ensure essential demo pages are published if they exist (fixes partial seed issues)
+			if !page.IsPublished {
+				page.IsPublished = true
+				db.Save(&page)
+				log.Printf("Corrected demo page to published: %s", p.Slug)
+			}
 		}
 	}
 
