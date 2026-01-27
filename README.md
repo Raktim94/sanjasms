@@ -100,6 +100,46 @@ If you encounter issues or want to see the server activity, use these commands:
 
 ---
 
+## 🛠️ Troubleshooting & Maintenance
+
+### 🔋 Managing the Containers (Up/Down)
+-   **Stop the CMS:**
+    ```bash
+    docker compose stop
+    ```
+-   **Start it again:**
+    ```bash
+    docker compose start
+    ```
+-   **Shut down and remove containers:**
+    ```bash
+    docker compose down
+    ```
+-   **Hard Reset (Delete all data/database):**
+    > [!CAUTION]
+    > This will erase your website and uploads!
+    ```bash
+    docker compose down -v
+    ```
+
+### 🆙 How to Update
+To get the latest version of SanjanaCMS:
+1.  **Pull latest code:**
+    ```bash
+    git pull
+    ```
+2.  **Rebuild and Restart:**
+    ```bash
+    docker compose up -d --build
+    ```
+
+### 📋 Common Fixes
+-   **Permission Denied:** Run `sudo usermod -aG docker $USER` and then `newgrp docker`.
+-   **Port Conflict:** If port `2512` is busy, change the number in `docker-compose.yml` under `ports`.
+-   **White Screen / Template Errors:** Check logs using `docker compose logs -f`.
+
+---
+
 ## 📦 Features at a Glance
 
 -   **Dynamic Page Builder:** Create pages using Drag-and-Drop style blocks (Text, Images, Buttons, Custom HTML).
