@@ -60,14 +60,18 @@
                         <div class="block-header">
                             <div class="block-info">
                                 <span class="block-type-icon">
-                                    {{if eq .Type "text"}}📝{{else if eq .Type "image"}}🖼️{{else if eq .Type "button"}}🔘{{else if eq .Type "embed"}}🔗{{else if eq .Type "html"}}💻{{end}}
+                                    {{if eq .Type "text"}}📝{{else if eq .Type "image"}}🖼️{{else if eq .Type
+                                    "button"}}🔘{{else if eq .Type "embed"}}🔗{{else if eq .Type "html"}}💻{{end}}
                                 </span>
                                 <span class="block-type-badge">{{.Type}}</span>
                             </div>
                             <div class="block-actions">
-                                <button type="button" class="btn-icon" title="Move Up" onclick="moveBlock(this, -1)">↑</button>
-                                <button type="button" class="btn-icon" title="Move Down" onclick="moveBlock(this, 1)">↓</button>
-                                <button type="button" class="btn-icon danger" title="Remove" onclick="removeBlock(this)">×</button>
+                                <button type="button" class="btn-icon" title="Move Up"
+                                    onclick="moveBlock(this, -1)">↑</button>
+                                <button type="button" class="btn-icon" title="Move Down"
+                                    onclick="moveBlock(this, 1)">↓</button>
+                                <button type="button" class="btn-icon danger" title="Remove"
+                                    onclick="removeBlock(this)">×</button>
                             </div>
                         </div>
                         <input type="hidden" name="block_type[]" value="{{.Type}}">
@@ -80,10 +84,12 @@
                             placeholder="Enter {{.Type}} code here...">{{.Content}}</textarea>
                         {{else if eq .Type "image"}}
                         <div class="image-block-content">
-                            <input type="text" name="block_content[]" class="block-input" 
-                                placeholder="Paste Image URL here..." value="{{.Content}}" oninput="updateImagePreview(this)">
+                            <input type="text" name="block_content[]" class="block-input"
+                                placeholder="Paste Image URL here..." value="{{.Content}}"
+                                oninput="updateImagePreview(this)">
                             <div class="image-preview-container">
-                                <img src="{{if .Content}}{{.Content}}{{else}}https://placehold.co/100x60?text=Preview{{end}}" class="mini-preview">
+                                <img src="{{if .Content}}{{.Content}}{{else}}https://placehold.co/100x60?text=Preview{{end}}"
+                                    class="mini-preview">
                             </div>
                         </div>
                         {{else}}
@@ -302,25 +308,32 @@
     }
 
     .btn-icon {
-        background: none;
-        border: none;
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
         cursor: pointer;
-        padding: 6px 10px;
-        font-size: 16px;
+        padding: 4px 8px;
+        font-size: 14px;
         color: var(--text-secondary);
         border-radius: 6px;
         transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
     }
 
     .btn-icon:hover {
         background: var(--nav-item-active-bg);
         color: var(--text-primary);
         transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .btn-icon.danger:hover {
         background: var(--danger-color);
         color: white;
+        border-color: var(--danger-color);
     }
 
     .btn-sm {
@@ -430,7 +443,7 @@
             ${editorContent}
         `;
         container.appendChild(div);
-        
+
         const input = div.querySelector('textarea, input');
         if (input) input.focus();
     }
@@ -452,10 +465,18 @@
 
     function moveBlock(btn, direction) {
         const item = btn.closest('.block-item');
-        if (direction === -1 && item.previousElementSibling) {
-            item.parentNode.insertBefore(item, item.previousElementSibling);
-        } else if (direction === 1 && item.nextElementSibling) {
-            item.parentNode.insertBefore(item.nextElementSibling, item);
+        if (!item) return;
+
+        if (direction === -1) {
+            const prev = item.previousElementSibling;
+            if (prev && prev.classList.contains('block-item')) {
+                item.parentNode.insertBefore(item, prev);
+            }
+        } else if (direction === 1) {
+            const next = item.nextElementSibling;
+            if (next && next.classList.contains('block-item')) {
+                item.parentNode.insertBefore(next, item);
+            }
         }
     }
 

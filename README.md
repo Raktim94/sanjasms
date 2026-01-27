@@ -81,6 +81,25 @@ You can customize the deployment in `docker-compose.yml`:
 
 ---
 
+## 📋 Viewing Logs
+
+If you encounter issues or want to see the server activity, use these commands:
+
+-   **Follow logs in real-time:**
+    ```bash
+    docker compose logs -f
+    ```
+-   **View last 100 lines:**
+    ```bash
+    docker compose logs --tail=100
+    ```
+-   **Show logs for the CMS container only:**
+    ```bash
+    docker compose logs cms
+    ```
+
+---
+
 ## 📦 Features at a Glance
 
 -   **Dynamic Page Builder:** Create pages using Drag-and-Drop style blocks (Text, Images, Buttons, Custom HTML).
