@@ -56,18 +56,40 @@
 
                 <div id="blocks-container" class="blocks-list">
                     {{range .Page.Blocks}}
-                    <div class="block-item" data-type="{{.Type}}">
+                    <div class="block-item block-type-{{.Type}}" data-type="{{.Type}}">
                         <div class="block-header">
-                            <span class="block-type-badge">{{.Type}}</span>
+                            <div class="block-info">
+                                <span class="block-type-icon">
+                                    {{if eq .Type "text"}}📝{{else if eq .Type "image"}}🖼️{{else if eq .Type "button"}}🔘{{else if eq .Type "embed"}}🔗{{else if eq .Type "html"}}💻{{end}}
+                                </span>
+                                <span class="block-type-badge">{{.Type}}</span>
+                            </div>
                             <div class="block-actions">
-                                <button type="button" class="btn-icon" onclick="moveBlock(this, -1)">↑</button>
-                                <button type="button" class="btn-icon" onclick="moveBlock(this, 1)">↓</button>
-                                <button type="button" class="btn-icon danger" onclick="removeBlock(this)">×</button>
+                                <button type="button" class="btn-icon" title="Move Up" onclick="moveBlock(this, -1)">↑</button>
+                                <button type="button" class="btn-icon" title="Move Down" onclick="moveBlock(this, 1)">↓</button>
+                                <button type="button" class="btn-icon danger" title="Remove" onclick="removeBlock(this)">×</button>
                             </div>
                         </div>
                         <input type="hidden" name="block_type[]" value="{{.Type}}">
+                        {{if or (eq .Type "html") (eq .Type "embed")}}
+                        <div class="code-editor-header">
+                            <span>Source Code</span>
+                            <span class="code-lang">{{if eq .Type "html"}}HTML{{else}}EMBED{{end}}</span>
+                        </div>
+                        <textarea name="block_content[]" class="block-textarea code-look"
+                            placeholder="Enter {{.Type}} code here...">{{.Content}}</textarea>
+                        {{else if eq .Type "image"}}
+                        <div class="image-block-content">
+                            <input type="text" name="block_content[]" class="block-input" 
+                                placeholder="Paste Image URL here..." value="{{.Content}}" oninput="updateImagePreview(this)">
+                            <div class="image-preview-container">
+                                <img src="{{if .Content}}{{.Content}}{{else}}https://placehold.co/100x60?text=Preview{{end}}" class="mini-preview">
+                            </div>
+                        </div>
+                        {{else}}
                         <textarea name="block_content[]" class="block-textarea"
                             placeholder="Enter {{.Type}} content...">{{.Content}}</textarea>
+                        {{end}}
                     </div>
                     {{end}}
                 </div>
@@ -174,48 +196,126 @@
     .block-item {
         background: white;
         border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        padding: 12px;
-        margin-bottom: 12px;
-        box-shadow: var(--shadow-sm);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .block-item:focus-within {
+        border-color: var(--accent-color);
+        box-shadow: 0 4px 20px rgba(0, 122, 255, 0.1);
     }
 
     .block-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .block-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .block-type-icon {
+        font-size: 16px;
     }
 
     .block-type-badge {
-        font-size: 10px;
+        font-size: 11px;
         text-transform: uppercase;
         font-weight: 700;
         background: var(--nav-item-active-bg);
-        padding: 2px 6px;
-        border-radius: 4px;
-        color: var(--text-secondary);
+        padding: 2px 8px;
+        border-radius: 6px;
+        color: var(--text-primary);
+        letter-spacing: 0.05em;
     }
 
-    .block-textarea {
-        min-height: 80px;
-        resize: vertical;
-        font-size: 14px;
+    /* Professional Code Editor Look */
+    .code-editor-header {
+        background: #2D2D2D;
+        color: #AAA;
+        padding: 6px 12px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        font-size: 11px;
+        font-family: var(--font-stack);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .code-lang {
+        color: var(--accent-color);
+        font-weight: bold;
+    }
+
+    .block-textarea.code-look {
+        background: #1E1E1E;
+        color: #D4D4D4;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        border: none;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        padding: 15px;
+        line-height: 1.5;
+        font-size: 13px;
+    }
+
+    .block-textarea.code-look:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    /* Image Block Fix */
+    .image-block-content {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .image-preview-container {
+        width: 100px;
+        height: 60px;
+        background: #f0f0f0;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        flex-shrink: 0;
+    }
+
+    .mini-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .btn-icon {
         background: none;
         border: none;
         cursor: pointer;
-        padding: 4px 8px;
+        padding: 6px 10px;
         font-size: 16px;
         color: var(--text-secondary);
-        border-radius: 4px;
+        border-radius: 6px;
+        transition: all 0.2s;
     }
 
     .btn-icon:hover {
         background: var(--nav-item-active-bg);
         color: var(--text-primary);
+        transform: translateY(-1px);
     }
 
     .btn-icon.danger:hover {
@@ -224,8 +324,8 @@
     }
 
     .btn-sm {
-        padding: 4px 10px;
-        font-size: 12px;
+        padding: 6px 14px;
+        font-size: 13px;
     }
 
     .google-preview {
@@ -281,22 +381,67 @@
     function addBlock(type) {
         const container = document.getElementById('blocks-container');
         const div = document.createElement('div');
-        div.className = 'block-item';
+        div.className = `block-item block-type-${type}`;
         div.dataset.type = type;
+
+        let icon = "📝";
+        if (type === "image") icon = "🖼️";
+        if (type === "button") icon = "🔘";
+        if (type === "embed") icon = "🔗";
+        if (type === "html") icon = "💻";
+
+        let editorContent = `
+            <textarea name="block_content[]" class="block-textarea" placeholder="Enter ${type} content..."></textarea>
+        `;
+
+        if (type === "html" || type === "embed") {
+            editorContent = `
+                <div class="code-editor-header">
+                    <span>Source Code</span>
+                    <span class="code-lang">${type.toUpperCase()}</span>
+                </div>
+                <textarea name="block_content[]" class="block-textarea code-look" placeholder="Enter ${type} code here..."></textarea>
+            `;
+        } else if (type === "image") {
+            editorContent = `
+                <div class="image-block-content">
+                    <input type="text" name="block_content[]" class="block-input" 
+                        placeholder="Paste Image URL here..." oninput="updateImagePreview(this)">
+                    <div class="image-preview-container">
+                        <img src="https://placehold.co/100x60?text=Preview" class="mini-preview">
+                    </div>
+                </div>
+            `;
+        }
+
         div.innerHTML = `
             <div class="block-header">
-                <span class="block-type-badge">${type}</span>
+                <div class="block-info">
+                    <span class="block-type-icon">${icon}</span>
+                    <span class="block-type-badge">${type}</span>
+                </div>
                 <div class="block-actions">
-                    <button type="button" class="btn-icon" onclick="moveBlock(this, -1)">↑</button>
-                    <button type="button" class="btn-icon" onclick="moveBlock(this, 1)">↓</button>
-                    <button type="button" class="btn-icon danger" onclick="removeBlock(this)">×</button>
+                    <button type="button" class="btn-icon" title="Move Up" onclick="moveBlock(this, -1)">↑</button>
+                    <button type="button" class="btn-icon" title="Move Down" onclick="moveBlock(this, 1)">↓</button>
+                    <button type="button" class="btn-icon danger" title="Remove" onclick="removeBlock(this)">×</button>
                 </div>
             </div>
             <input type="hidden" name="block_type[]" value="${type}">
-            <textarea name="block_content[]" class="block-textarea" placeholder="Enter ${type} content..."></textarea>
+            ${editorContent}
         `;
         container.appendChild(div);
-        div.querySelector('textarea').focus();
+        
+        const input = div.querySelector('textarea, input');
+        if (input) input.focus();
+    }
+
+    function updateImagePreview(input) {
+        const preview = input.closest('.image-block-content').querySelector('.mini-preview');
+        if (input.value) {
+            preview.src = input.value;
+        } else {
+            preview.src = "https://placehold.co/100x60?text=Preview";
+        }
     }
 
     function removeBlock(btn) {

@@ -16,11 +16,17 @@
             {{if eq .Type "text"}}
             <div class="block-text">{{.Content | safe}}</div>
             {{else if eq .Type "image"}}
-            <img src="{{.Content}}" class="block-image" alt="">
+            <div class="block-image-container">
+                <img src="{{.Content}}" class="block-image" alt="">
+            </div>
             {{else if eq .Type "button"}}
-            <a href="#" class="btn btn-primary block-button">{{.Content}}</a>
+            <div class="block-button-container">
+                <a href="#" class="btn btn-primary block-button">{{.Content}}</a>
+            </div>
             {{else if eq .Type "embed"}}
-            <div class="block-embed">{{.Content | safe}}</div>
+            <div class="responsive-embed-wrapper">
+                {{.Content | safe}}
+            </div>
             {{else if eq .Type "html"}}
             <div class="block-html">{{.Content | safe}}</div>
             {{end}}
@@ -31,9 +37,9 @@
 
 <style>
     .page-container {
-        max-width: 1200px;
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 40px 20px;
+        padding: 60px 20px;
     }
 
     .landing-page {
@@ -44,31 +50,85 @@
     .blocks-container {
         display: flex;
         flex-direction: column;
-        gap: 40px;
+        gap: 2rem;
     }
 
+    /* Text Block Optimization */
     .block-text {
-        font-size: 1.1rem;
-        line-height: 1.6;
+        font-size: 1.15rem;
+        line-height: 1.7;
+        color: #333;
+    }
+
+    /* Image Block Optimization */
+    .block-image-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
 
     .block-image {
         max-width: 100%;
         height: auto;
-        border-radius: 8px;
-        display: block;
-        margin: 0 auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Responsive Embed Optimization (PC/Mobile) */
+    .responsive-embed-wrapper {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    /* Handle iframes specifically (YouTube, Maps, etc) */
+    .responsive-embed-wrapper iframe,
+    .responsive-embed-wrapper video {
+        width: 100%;
+        max-width: 100%;
+        border: none;
+        border-radius: 12px;
+    }
+
+    /* Button Optimization */
+    .block-button-container {
+        display: flex;
+        justify-content: center;
+        padding: 10px 0;
     }
 
     .block-button {
         display: inline-block;
-        padding: 12px 24px;
+        padding: 14px 32px;
         font-size: 1.1rem;
-        text-align: center;
+        font-weight: 600;
+        border-radius: 50px;
+        transition: transform 0.2s;
     }
 
-    .block-wrapper {
-        margin-bottom: 20px;
+    .block-button:hover {
+        transform: scale(1.05);
+    }
+
+    /* Mobile Responsive Hooks */
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 30px 15px;
+        }
+
+        .block-text {
+            font-size: 1.05rem;
+        }
+
+        .blocks-container {
+            gap: 1.5rem;
+        }
+
+        .block-button {
+            width: 100%;
+            padding: 12px 20px;
+        }
     }
 </style>
 {{end}}
