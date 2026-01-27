@@ -34,16 +34,17 @@ func CheckFirstRun(c echo.Context) error {
 }
 
 func SetupPage(c echo.Context) error {
-	if err := CheckFirstRun(c); err != nil {
-		// If CheckFirstRun redirected, we shouldn't be here unless it returned nil (meaning no redirect)
-		// But CheckFirstRun logic is: if count == 0, redirect to setup.
-		// Wait, if we are AT /admin/setup, CheckFirstRun loop?
-		// Let's refine the logic in routes, not here.
-	}
-	// Just check if users exist
 	var count int64
 	models.DB.Model(&models.User{}).Count(&count)
-	if count > 0 {
+
+	// If it's the first run, always allow signup
+	if count == 0 {
+		return c.Render(http.StatusOK, "signup.html", nil)
+	}
+
+	// If not first run, check setting
+	settings := GetSettingsMap()
+	if settings["allow_public_signup"] != "true" {
 		return c.Redirect(http.StatusFound, "/admin/login")
 	}
 
@@ -51,6 +52,16 @@ func SetupPage(c echo.Context) error {
 }
 
 func SetupService(c echo.Context) error {
+	var count int64
+	models.DB.Model(&models.User{}).Count(&count)
+
+	if count > 0 {
+		settings := GetSettingsMap()
+		if settings["allow_public_signup"] != "true" {
+			return c.String(http.StatusForbidden, "Public signups are disabled")
+		}
+	}
+
 	email := c.FormValue("email")
 	password := c.FormValue("password")
 

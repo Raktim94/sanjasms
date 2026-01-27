@@ -22,20 +22,62 @@
 
         <!-- Content Tab -->
         <div id="tab-content" class="tab-pane active">
-            <label>Page Title</label>
-            <input type="text" name="title" id="pageTitle" value="{{.Page.Title}}" required oninput="updatePreview()">
-
-            <label>HTML Content</label>
-            <div class="editor-toolbar">
-                <button type="button" class="btn btn-secondary btn-sm"
-                    onclick="insertSnippet('youtube')">YouTube</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="insertSnippet('map')">Map</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="insertSnippet('script')">Script</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="insertSnippet('image')">Image
-                    ID</button>
+            <div style="display: flex; gap: 20px; align-items: flex-end; margin-bottom: 20px;">
+                <div style="flex: 2;">
+                    <label>Page Title</label>
+                    <input type="text" name="title" id="pageTitle" value="{{.Page.Title}}" required
+                        oninput="updatePreview()">
+                </div>
+                <div style="flex: 1;">
+                    <label>Page Type</label>
+                    <select name="page_type">
+                        <option value="normal" {{if eq .Page.PageType "normal" }}selected{{end}}>Normal Page</option>
+                        <option value="landing" {{if eq .Page.PageType "landing" }}selected{{end}}>Landing Page</option>
+                    </select>
+                </div>
             </div>
+
+            <div class="block-editor-container">
+                <div class="flex-between mb-4">
+                    <h3>Blocks</h3>
+                    <div class="block-controls">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addBlock('text')">+
+                            Text</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addBlock('image')">+
+                            Image</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addBlock('button')">+
+                            Button</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addBlock('embed')">+
+                            Embed</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addBlock('html')">+
+                            HTML</button>
+                    </div>
+                </div>
+
+                <div id="blocks-container" class="blocks-list">
+                    {{range .Page.Blocks}}
+                    <div class="block-item" data-type="{{.Type}}">
+                        <div class="block-header">
+                            <span class="block-type-badge">{{.Type}}</span>
+                            <div class="block-actions">
+                                <button type="button" class="btn-icon" onclick="moveBlock(this, -1)">↑</button>
+                                <button type="button" class="btn-icon" onclick="moveBlock(this, 1)">↓</button>
+                                <button type="button" class="btn-icon danger" onclick="removeBlock(this)">×</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="block_type[]" value="{{.Type}}">
+                        <textarea name="block_content[]" class="block-textarea"
+                            placeholder="Enter {{.Type}} content...">{{.Content}}</textarea>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+
+            <label>Legacy HTML Content (Optional)</label>
             <textarea id="html_content" name="html_content" class="code-editor"
-                style="min-height: 400px; font-family: monospace;">{{.Page.HTMLContent}}</textarea>
+                style="min-height: 100px; font-family: monospace;">{{.Page.HTMLContent}}</textarea>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">If blocks are used, they will be rendered after
+                this content.</p>
         </div>
 
         <!-- SEO Tab -->
@@ -121,6 +163,71 @@
         color: var(--text-primary);
     }
 
+    .block-editor-container {
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.01);
+        margin-bottom: 24px;
+    }
+
+    .block-item {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .block-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .block-type-badge {
+        font-size: 10px;
+        text-transform: uppercase;
+        font-weight: 700;
+        background: var(--nav-item-active-bg);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--text-secondary);
+    }
+
+    .block-textarea {
+        min-height: 80px;
+        resize: vertical;
+        font-size: 14px;
+    }
+
+    .btn-icon {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 8px;
+        font-size: 16px;
+        color: var(--text-secondary);
+        border-radius: 4px;
+    }
+
+    .btn-icon:hover {
+        background: var(--nav-item-active-bg);
+        color: var(--text-primary);
+    }
+
+    .btn-icon.danger:hover {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+
     .google-preview {
         background: white;
         padding: 20px;
@@ -160,7 +267,7 @@
         document.getElementById('tab-' + tabName).style.display = 'block';
 
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        event.target.classList.add('active');
+        event.currentTarget.classList.add('active');
     }
 
     function updatePreview() {
@@ -171,19 +278,40 @@
         document.getElementById('previewDesc').innerText = desc;
     }
 
-    function insertSnippet(type) {
-        const textarea = document.getElementById('html_content');
-        let snippet = "";
-        if (type === 'youtube') snippet = '<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>';
-        if (type === 'map') snippet = '<iframe src="https://www.google.com/maps/embed?..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
-        if (type === 'script') snippet = '<script>\n    // JS Code\n<\/script>';
-        if (type === 'image') snippet = '<img src="/uploads/FILENAME" alt="Description">';
+    function addBlock(type) {
+        const container = document.getElementById('blocks-container');
+        const div = document.createElement('div');
+        div.className = 'block-item';
+        div.dataset.type = type;
+        div.innerHTML = `
+            <div class="block-header">
+                <span class="block-type-badge">${type}</span>
+                <div class="block-actions">
+                    <button type="button" class="btn-icon" onclick="moveBlock(this, -1)">↑</button>
+                    <button type="button" class="btn-icon" onclick="moveBlock(this, 1)">↓</button>
+                    <button type="button" class="btn-icon danger" onclick="removeBlock(this)">×</button>
+                </div>
+            </div>
+            <input type="hidden" name="block_type[]" value="${type}">
+            <textarea name="block_content[]" class="block-textarea" placeholder="Enter ${type} content..."></textarea>
+        `;
+        container.appendChild(div);
+        div.querySelector('textarea').focus();
+    }
 
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-        textarea.value = text.substring(0, start) + snippet + text.substring(end);
-        textarea.focus();
+    function removeBlock(btn) {
+        if (confirm('Remove this block?')) {
+            btn.closest('.block-item').remove();
+        }
+    }
+
+    function moveBlock(btn, direction) {
+        const item = btn.closest('.block-item');
+        if (direction === -1 && item.previousElementSibling) {
+            item.parentNode.insertBefore(item, item.previousElementSibling);
+        } else if (direction === 1 && item.nextElementSibling) {
+            item.parentNode.insertBefore(item.nextElementSibling, item);
+        }
     }
 
     // Init Logic

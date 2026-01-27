@@ -3,46 +3,204 @@
 {{end}}
 
 {{define "content"}}
-<div style="display:flex; justify-content:space-between; align-items:center;">
+<div class="flex-between mb-4">
     <h1>Menus</h1>
-    <a href="/admin/menus/new" class="btn">Add Menu Item</a>
+    <div class="actions">
+        <button id="save-order" class="btn btn-primary" style="display:none;" onclick="saveMenuOrder()">Save
+            Changes</button>
+        <a href="/admin/menus/new" class="btn btn-secondary">Add Menu Item</a>
+    </div>
 </div>
 
 <div class="card">
-    <table>
-        <thead>
-            <tr>
-                <th>Sequence</th>
-                <th>Label</th>
-                <th>URL</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{range .Menus}}
-            <tr>
-                <td>{{.Sequence}}</td>
-                <td>{{.Label}}</td>
-                <td>{{.URL}}</td>
-                <td>
-                    {{if .IsActive}}
-                    <span class="badge success">Active</span>
-                    {{else}}
-                    <span class="badge">Inactive</span>
-                    {{end}}
-                </td>
-                <td>
-                    <a href="/admin/menus/{{.ID}}/edit" style="margin-right: 10px;">Edit</a>
+    <p style="color:var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">
+        Drag items to reorder or nest them. Changes must be saved to take effect.
+    </p>
+
+    <div id="menu-tree" class="nested-sortable">
+        {{range .Menus}}
+        {{if not .ParentID}}
+        <div class="menu-item-wrapper" data-id="{{.ID}}">
+            <div class="menu-item-content">
+                <div class="drag-handle">≡</div>
+                <div class="menu-item-info">
+                    <span class="menu-label">{{.Label}}</span>
+                    <span class="menu-url">{{.URL}}</span>
+                </div>
+                <div class="menu-actions">
+                    <a href="/admin/menus/{{.ID}}/edit" class="btn-icon">✎</a>
                     <form method="POST" action="/admin/menus/{{.ID}}/delete" style="display:inline;"
                         onsubmit="return confirm('Are you sure?');">
-                        <button type="submit"
-                            style="background:none; border:none; color:red; cursor:pointer; text-decoration:underline; font-size:1em; padding:0;">Delete</button>
+                        <button type="submit" class="btn-icon danger">×</button>
                     </form>
-                </td>
-            </tr>
-            {{end}}
-        </tbody>
-    </table>
+                </div>
+            </div>
+            <div class="nested-container">
+                {{$parentID := .ID}}
+                {{range $.Menus}}
+                {{if .ParentID}}
+                {{if eq .ParentID $parentID}}
+                <div class="menu-item-wrapper" data-id="{{.ID}}">
+                    <div class="menu-item-content">
+                        <div class="drag-handle">≡</div>
+                        <div class="menu-item-info">
+                            <span class="menu-label">{{.Label}}</span>
+                            <span class="menu-url">{{.URL}}</span>
+                        </div>
+                        <div class="menu-actions">
+                            <a href="/admin/menus/{{.ID}}/edit" class="btn-icon">✎</a>
+                            <form method="POST" action="/admin/menus/{{.ID}}/delete" style="display:inline;"
+                                onsubmit="return confirm('Are you sure?');">
+                                <button type="submit" class="btn-icon danger">×</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="nested-container"></div>
+                </div>
+                {{end}}
+                {{end}}
+                {{end}}
+            </div>
+        </div>
+        {{end}}
+        {{end}}
+    </div>
 </div>
+
+<style>
+    .nested-sortable {
+        min-height: 50px;
+    }
+
+    .menu-item-wrapper {
+        margin-bottom: 8px;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+    }
+
+    .menu-item-content {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        gap: 12px;
+    }
+
+    .drag-handle {
+        cursor: grab;
+        color: var(--text-secondary);
+        font-size: 20px;
+        user-select: none;
+    }
+
+    .menu-item-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .menu-label {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .menu-url {
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+
+    .nested-container {
+        padding-left: 40px;
+        min-height: 10px;
+    }
+
+    .btn-icon {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        font-size: 14px;
+        color: var(--text-secondary);
+        transition: color 0.2s;
+    }
+
+    .btn-icon:hover {
+        color: var(--text-primary);
+    }
+
+    .btn-icon.danger:hover {
+        color: var(--danger-color);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nestedSortables = document.querySelectorAll('.nested-container, #menu-tree');
+        for (let i = 0; i < nestedSortables.length; i++) {
+            new Sortable(nestedSortables[i], {
+                group: 'nested',
+                animation: 150,
+                fallbackOnBody: true,
+                swapThreshold: 0.65,
+                handle: '.drag-handle',
+                onEnd: function () {
+                    document.getElementById('save-order').style.display = 'inline-block';
+                }
+            });
+        }
+    });
+
+    async function saveMenuOrder() {
+        const saveBtn = document.getElementById('save-order');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        const data = [];
+        const tree = document.getElementById('menu-tree');
+
+        function processList(container, parentId = null) {
+            const items = container.children;
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (!item.classList.contains('menu-item-wrapper')) continue;
+
+                const id = parseInt(item.dataset.id);
+                data.push({
+                    id: id,
+                    sequence: i,
+                    parent_id: parentId
+                });
+
+                const nested = item.querySelector('.nested-container');
+                if (nested) {
+                    processList(nested, id);
+                }
+            }
+        }
+
+        processList(tree);
+
+        try {
+            const response = await fetch('/admin/menus/reorder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Error saving menu order');
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Changes';
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error saving menu order');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Changes';
+        }
+    }
+</script>
 {{end}}

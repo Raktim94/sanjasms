@@ -23,6 +23,18 @@
         <input type="number" name="sequence" value="{{.Menu.Sequence}}" required
             style="width:100px; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
 
+        <label style="display:block; margin-bottom:5px;">Parent Menu Item (Optional)</label>
+        <select name="parent_id" style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">
+            <option value="">None (Top Level)</option>
+            {{$currentID := .Menu.ID}}
+            {{$parentID := .Menu.ParentID}}
+            {{range .AllMenus}}
+            {{if ne .ID $currentID}}
+            <option value="{{.ID}}" {{if $parentID}}{{if eq $parentID .ID}}selected{{end}}{{end}}>{{.Label}}</option>
+            {{end}}
+            {{end}}
+        </select>
+
         <label style="margin-bottom:15px; display:block;">
             <input type="checkbox" name="is_active" {{if .Menu.IsActive}}checked{{end}}> Active
         </label>

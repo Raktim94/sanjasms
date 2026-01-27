@@ -3,6 +3,15 @@
 {{end}}
 
 {{define "content"}}
+{{$site_title := index .Settings "site_title"}}
+{{$meta_desc := index .Settings "meta_description"}}
+{{$logo_url := index .Settings "logo_url"}}
+{{$favicon_url := index .Settings "favicon_url"}}
+{{$primary_color := index .Settings "primary_color"}}
+{{$footer_text := index .Settings "footer_text"}}
+{{$robots_txt := index .Settings "robots_txt"}}
+{{$allow_signup := index .Settings "allow_public_signup"}}
+
 <div class="header-with-action">
     <h1>Site Settings</h1>
 </div>
@@ -13,34 +22,48 @@
             <h3>Website Identity</h3>
             <div class="form-group">
                 <label for="site_title">Website Title</label>
-                <input type="text" id="site_title" name="site_title" value="{{index .Settings " site_title"}}" required>
+                <input type="text" id="site_title" name="site_title" value="{{$site_title}}" required>
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" name="allow_public_signup" value="true" {{if eq $allow_signup "true"
+                        }}checked{{end}}>
+                    <span>Allow Public Signups</span>
+                </label>
             </div>
             <div class="form-group">
                 <label for="meta_description">SEO Meta Description (Default)</label>
-                <textarea id="meta_description" name="meta_description"
-                    rows="3">{{index .Settings "meta_description"}}</textarea>
+                <textarea id="meta_description" name="meta_description" rows="3">{{$meta_desc}}</textarea>
             </div>
         </section>
 
         <section class="form-section">
             <h3>Branding & Assets</h3>
             <div class="form-group">
-                <label for="logo_url">Logo URL</label>
-                <div class="input-with-hint">
-                    <input type="text" id="logo_url" name="logo_url" value="{{index .Settings " logo_url"}}"
-                        placeholder="/static/uploads/logo.png">
-                    <small>Upload your logo in the Media library first.</small>
+                <label for="logo_url">Website Logo</label>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                    {{if $logo_url}}
+                    <img src="{{$logo_url}}" style="height: 40px; border-radius: 4px; background: #eee; padding: 2px;">
+                    {{end}}
+                    <input type="text" id="logo_url" name="logo_url" value="{{$logo_url}}"
+                        placeholder="/static/uploads/logo.png" style="flex: 1;">
                 </div>
             </div>
             <div class="form-group">
-                <label for="favicon_url">Favicon URL</label>
-                <input type="text" id="favicon_url" name="favicon_url" value="{{index .Settings " favicon_url"}}"
-                    placeholder="/favicon.ico">
+                <label for="favicon_url">Favicon</label>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                    {{if $favicon_url}}
+                    <img src="{{$favicon_url}}"
+                        style="height: 24px; border-radius: 2px; background: #eee; padding: 2px;">
+                    {{end}}
+                    <input type="text" id="favicon_url" name="favicon_url" value="{{$favicon_url}}"
+                        placeholder="/favicon.ico" style="flex: 1;">
+                </div>
             </div>
             <div class="form-group">
                 <label for="primary_color">Primary Brand Color</label>
-                <input type="color" id="primary_color" name="primary_color" value="{{if index .Settings "
-                    primary_color"}}{{index .Settings "primary_color" }}{{else}}#007AFF{{end}}">
+                <input type="color" id="primary_color" name="primary_color"
+                    value="{{if $primary_color}}{{$primary_color}}{{else}}#007AFF{{end}}">
             </div>
         </section>
 
@@ -48,12 +71,11 @@
             <h3>Content & Legal</h3>
             <div class="form-group">
                 <label for="footer_text">Footer Text</label>
-                <input type="text" id="footer_text" name="footer_text" value="{{index .Settings " footer_text"}}">
+                <input type="text" id="footer_text" name="footer_text" value="{{$footer_text}}">
             </div>
             <div class="form-group">
                 <label for="robots_txt">Robots.txt Content</label>
-                <textarea id="robots_txt" name="robots_txt" rows="5">{{index .Settings "robots_txt"}}</textarea>
-                <small>Control how search engines crawl your site.</small>
+                <textarea id="robots_txt" name="robots_txt" rows="5">{{$robots_txt}}</textarea>
             </div>
         </section>
 

@@ -1,8 +1,74 @@
 {{define "page.html"}}
-<!-- Fix Applied: Page Ready for Render -->
 {{template "public_layout" .}}
 {{end}}
 
 {{define "content"}}
-{{.Content}}
+<div class="page-container {{if eq .Page.PageType " landing"}}landing-page{{end}}">
+    {{if .Content}}
+    <div class="legacy-content">
+        {{.Content}}
+    </div>
+    {{end}}
+
+    <div class="blocks-container">
+        {{range .Page.Blocks}}
+        <div class="block-wrapper block-{{.Type}}">
+            {{if eq .Type "text"}}
+            <div class="block-text">{{.Content | safe}}</div>
+            {{else if eq .Type "image"}}
+            <img src="{{.Content}}" class="block-image" alt="">
+            {{else if eq .Type "button"}}
+            <a href="#" class="btn btn-primary block-button">{{.Content}}</a>
+            {{else if eq .Type "embed"}}
+            <div class="block-embed">{{.Content | safe}}</div>
+            {{else if eq .Type "html"}}
+            <div class="block-html">{{.Content | safe}}</div>
+            {{end}}
+        </div>
+        {{end}}
+    </div>
+</div>
+
+<style>
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .landing-page {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .blocks-container {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .block-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .block-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .block-button {
+        display: inline-block;
+        padding: 12px 24px;
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .block-wrapper {
+        margin-bottom: 20px;
+    }
+</style>
 {{end}}

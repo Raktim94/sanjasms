@@ -9,7 +9,7 @@ import (
 
 func PageList(c echo.Context) error {
 	var pages []models.Page
-	models.DB.Find(&pages)
+	models.DB.Order("updated_at desc").Find(&pages)
 	return c.Render(http.StatusOK, "pages_list.html", map[string]interface{}{
 		"Title":  "Pages",
 		"Active": "pages",
@@ -30,6 +30,7 @@ func PageCreate(c echo.Context) error {
 	page := models.Page{
 		Title:           c.FormValue("title"),
 		Slug:            c.FormValue("slug"),
+		PageType:        c.FormValue("page_type"),
 		HTMLContent:     c.FormValue("html_content"),
 		MetaTitle:       c.FormValue("meta_title"),
 		MetaDescription: c.FormValue("meta_description"),
@@ -53,13 +54,17 @@ func PageCreate(c echo.Context) error {
 			"IsNew":  true,
 		})
 	}
+
+	// Sync Blocks
+	SyncPageBlocks(page.ID, c)
+
 	return c.Redirect(http.StatusFound, "/admin/pages")
 }
 
 func PageEdit(c echo.Context) error {
 	id := c.Param("id")
 	var page models.Page
-	if err := models.DB.First(&page, id).Error; err != nil {
+	if err := models.DB.Preload("Blocks").First(&page, id).Error; err != nil {
 		return c.String(http.StatusNotFound, "Page not found")
 	}
 	return c.Render(http.StatusOK, "pages_form.html", map[string]interface{}{
@@ -79,6 +84,7 @@ func PageUpdate(c echo.Context) error {
 
 	page.Title = c.FormValue("title")
 	page.Slug = c.FormValue("slug")
+	page.PageType = c.FormValue("page_type")
 	page.HTMLContent = c.FormValue("html_content")
 	page.MetaTitle = c.FormValue("meta_title")
 	page.MetaDescription = c.FormValue("meta_description")
@@ -97,7 +103,32 @@ func PageUpdate(c echo.Context) error {
 			"IsNew":  false,
 		})
 	}
+
+	// Sync Blocks
+	SyncPageBlocks(page.ID, c)
+
 	return c.Redirect(http.StatusFound, "/admin/pages")
+}
+
+func SyncPageBlocks(pageID uint, c echo.Context) {
+	// First, clear existing blocks for this page
+	models.DB.Where("page_id = ?", pageID).Delete(&models.PageBlock{})
+
+	types := c.Request().Form["block_type[]"]
+	contents := c.Request().Form["block_content[]"]
+
+	for i := 0; i < len(types); i++ {
+		if i >= len(contents) {
+			break
+		}
+		block := models.PageBlock{
+			PageID:   pageID,
+			Type:     types[i],
+			Content:  contents[i],
+			Sequence: i,
+		}
+		models.DB.Create(&block)
+	}
 }
 
 func PageDelete(c echo.Context) error {

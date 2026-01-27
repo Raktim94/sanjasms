@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 func PublicPage(c echo.Context) error {
@@ -36,7 +37,9 @@ func PublicPage(c echo.Context) error {
 
 	var page models.Page
 	// Find published page by slug
-	if err := models.DB.Where("slug = ? AND is_published = ?", slug, true).First(&page).Error; err != nil {
+	if err := models.DB.Preload("Blocks", func(db *gorm.DB) *gorm.DB {
+		return db.Order("sequence ASC")
+	}).Where("slug = ? AND is_published = ?", slug, true).First(&page).Error; err != nil {
 		log.Printf("Page not found in DB: %s (error: %v)", slug, err)
 
 		// Render 404 with safe context

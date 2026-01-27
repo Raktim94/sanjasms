@@ -18,8 +18,9 @@ type Page struct {
 	CustomHead string // Scripts/Styles for <head>
 	CustomBody string // Scripts for end of <body>
 
-	IsPublished bool `gorm:"default:false"`
-	Blocks      []PageBlock
+	IsPublished bool        `gorm:"default:false"`
+	PageType    string      `gorm:"default:'normal'"` // normal, landing
+	Blocks      []PageBlock `gorm:"foreignKey:PageID;constraint:OnDelete:CASCADE"`
 }
 
 type PageBlock struct {

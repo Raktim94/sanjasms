@@ -210,6 +210,7 @@ func main() {
 	adminGroup.GET("/menus/:id/edit", handlers.MenuEdit)
 	adminGroup.POST("/menus/:id", handlers.MenuUpdate)
 	adminGroup.POST("/menus/:id/delete", handlers.MenuDelete)
+	adminGroup.POST("/menus/reorder", handlers.MenuReorder)
 
 	// Media Routes
 	adminGroup.GET("/media", handlers.MediaList)

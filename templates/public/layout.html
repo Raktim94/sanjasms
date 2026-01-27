@@ -1,27 +1,56 @@
 {{define "public_layout"}}
+{{$site_title := index .Settings "site_title"}}
+{{$meta_desc := index .Settings "meta_description"}}
+{{$logo_url := index .Settings "logo_url"}}
+{{$favicon_url := index .Settings "favicon_url"}}
+{{$primary_color := index .Settings "primary_color"}}
+{{$footer_text := index .Settings "footer_text"}}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{if .Page}}{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else if .Title}}{{.Title}}{{else}}{{index .Settings
-        "site_title"}}{{end}}{{else if .Title}}{{.Title}}{{else}}{{index .Settings "site_title"}}{{end}}</title>
-    <meta name="description" content="{{if .Page}}{{.Page.MetaDescription}}{{else}}{{index .Settings "
-        meta_description"}}{{end}}">
-    <meta name="keywords" content="{{if .Page}}{{.Page.MetaKeywords}}{{end}}">
-    <!-- Open Graph -->
+    <title>{{if .Page}}{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else if
+        .Title}}{{.Title}}{{else}}{{$site_title}}{{end}}{{else if .Title}}{{.Title}}{{else}}{{$site_title}}{{end}}
+    </title>
+    <meta name="description" content="{{if .Page}}{{.Page.MetaDescription}}{{else}}{{$meta_desc}}{{end}}">
+    {{if .Page}}{{if .Page.MetaKeywords}}
+    <meta name="keywords" content="{{.Page.MetaKeywords}}">{{end}}{{end}}
     <meta property="og:title"
         content="{{if .Page}}{{if .Page.MetaTitle}}{{.Page.MetaTitle}}{{else}}{{.Title}}{{end}}{{else}}{{.Title}}{{end}}">
-    <meta property="og:description" content="{{if .Page}}{{.Page.MetaDescription}}{{else}}{{index .Settings "
-        meta_description"}}{{end}}">
+    <meta property="og:description" content="{{if .Page}}{{.Page.MetaDescription}}{{else}}{{$meta_desc}}{{end}}">
     {{if .Page}}{{if .Page.OGImage}}
     <meta property="og:image" content="{{.Page.OGImage}}">{{end}}{{end}}
-    <link rel="icon" href="{{index .Settings " favicon_url"}}">
+    <link rel="icon" href="{{$favicon_url}}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #007AFF;
+            --primary: {
+                    {
+                    if $primary_color
+                }
+            }
+
+                {
+                    {
+                    $primary_color
+                }
+            }
+
+                {
+                    {
+                    else
+                }
+            }
+
+            #007AFF {
+                    {
+                    end
+                }
+            }
+
+            ;
             --text-primary: #1D1D1F;
             --text-secondary: #86868B;
             --bg-color: #FFFFFF;
@@ -29,7 +58,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
             color: var(--text-primary);
             background: var(--bg-color);
@@ -42,7 +71,6 @@
         header {
             background: var(--nav-bg);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -87,27 +115,6 @@
             color: var(--text-primary);
         }
 
-        .header-actions {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-
-        .btn-cta {
-            background: #4cd964;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: opacity 0.2s;
-        }
-
-        .btn-cta:hover {
-            opacity: 0.9;
-        }
-
         main {
             flex: 1;
             width: 100%;
@@ -125,34 +132,23 @@
             border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
     </style>
-    <!-- Embeds Injection -->
     {{range .Embeds}}{{if .IsActive}}{{.Code | safe}}{{end}}{{end}}
-    <!-- Custom Head Injection -->
     {{if .Page}}{{.Page.CustomHead | safe}}{{end}}
 </head>
 
 <body>
     <header>
         <a href="/" class="logo">
-            {{if index .Settings "logo_url"}}<img src="{{index .Settings " logo_url"}}">{{end}}
-            <span>{{if index .Settings "site_title"}}{{index .Settings "site_title"}}{{else}}sanjanacms{{end}}</span>
+            {{if $logo_url}}<img src="{{$logo_url}}">{{end}}
+            <span>{{if $site_title}}{{$site_title}}{{else}}sanjanacms{{end}}</span>
         </a>
-        <nav>
-            {{range .Menus}}<a href="{{.URL}}">{{.Label}}</a>{{end}}
-        </nav>
+        <nav>{{range .Menus}}<a href="{{.URL}}">{{.Label}}</a>{{end}}</nav>
         <div class="header-actions">
-            <svg width="16" height="16" fill="none" stroke="#333" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="M21 21l-4.35-4.35"></path>
-            </svg>
             <a href="/admin/login" style="color:var(--text-primary); text-decoration:none; font-size:14px;">Login</a>
         </div>
     </header>
     <main>{{template "content" .}}</main>
-    <footer>
-        {{if index .Settings "footer_text"}}{{index .Settings "footer_text"}}{{else}}&copy; 2026 sanjanacms{{end}}
-    </footer>
-    <!-- Custom Body Injection -->
+    <footer>{{if $footer_text}}{{$footer_text}}{{else}}&copy; 2026 sanjanacms{{end}}</footer>
     {{if .Page}}{{.Page.CustomBody | safe}}{{end}}
 </body>
 
