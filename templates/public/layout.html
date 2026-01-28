@@ -54,11 +54,12 @@
             --text-primary: #1D1D1F;
             --text-secondary: #86868B;
             --bg-color: #FFFFFF;
-            --nav-bg: rgba(255, 255, 255, 0.8);
+            --nav-bg: rgba(255, 255, 255, 0.72);
+            --accent-glow: rgba(0, 122, 255, 0.15);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
             color: var(--text-primary);
             background: var(--bg-color);
@@ -70,44 +71,52 @@
 
         header {
             background: var(--nav-bg);
-            backdrop-filter: blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            padding: 0 40px;
-            height: 60px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 0 32px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: all 0.3s ease;
         }
 
         .logo {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            letter-spacing: -0.02em;
         }
 
         .logo img {
-            height: 32px;
+            height: 28px;
             width: auto;
+            border-radius: 6px;
         }
 
         nav {
             display: flex;
-            gap: 30px;
+            gap: 24px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         nav a {
             text-decoration: none;
             color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 13px;
+            font-weight: 400;
             transition: color 0.2s;
+            letter-spacing: -0.01em;
         }
 
         nav a:hover,
@@ -115,21 +124,82 @@
             color: var(--text-primary);
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-login {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--text-primary);
+        }
+
         main {
             flex: 1;
             width: 100%;
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 60px 20px;
         }
 
         footer {
             background: #F5F5F7;
-            padding: 40px;
+            padding: 60px 40px;
             text-align: center;
             color: var(--text-secondary);
             font-size: 12px;
             border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 0 16px;
+            }
+
+            nav {
+                display: none;
+                position: fixed;
+                top: 52px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                gap: 16px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                transform: none;
+                z-index: 999;
+            }
+
+            nav.active {
+                display: flex;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .header-actions {
+                display: none;
+            }
         }
     </style>
     {{range .Embeds}}{{if .IsActive}}{{.Code | safe}}{{end}}{{end}}
@@ -142,11 +212,28 @@
             {{if $logo_url}}<img src="{{$logo_url}}">{{end}}
             <span>{{if $site_title}}{{$site_title}}{{else}}sanjanacms{{end}}</span>
         </a>
-        <nav>{{range .Menus}}<a href="{{.URL}}">{{.Label}}</a>{{end}}</nav>
+        <nav id="mainNav">
+            {{range .Menus}}<a href="{{.URL}}">{{.Label}}</a>{{end}}
+            <a href="/admin/login" class="mobile-only" style="display:none;">Login</a>
+        </nav>
         <div class="header-actions">
-            <a href="/admin/login" style="color:var(--text-primary); text-decoration:none; font-size:14px;">Login</a>
+            <a href="/admin/login" class="btn-login">Login</a>
         </div>
+        <button class="mobile-toggle" onclick="toggleMenu()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
     </header>
+    <script>
+        function toggleMenu() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+        }
+    </script>
     <main>{{template "content" .}}</main>
     <footer>{{if $footer_text}}{{$footer_text}}{{else}}&copy; 2026 sanjanacms{{end}}</footer>
     {{if .Page}}{{.Page.CustomBody | safe}}{{end}}

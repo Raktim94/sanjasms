@@ -163,11 +163,88 @@
             <p style="color:var(--text-secondary);">Unpublished pages are only visible to admins.</p>
         </div>
 
-        <div style="margin-top:24px; text-align:right;">
+        <div style="margin-top:24px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="preview-toggles">
+                <button type="button" class="btn btn-secondary active" id="desktopViewBtn"
+                    onclick="setPreviewSize('desktop')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    Desktop
+                </button>
+                <button type="button" class="btn btn-secondary" id="mobileViewBtn" onclick="setPreviewSize('mobile')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                    Mobile
+                </button>
+            </div>
             <button type="submit" class="btn btn-primary">Save Page</button>
         </div>
     </form>
 </div>
+
+<!-- Mobile Preview Simulation -->
+<style>
+    .preview-toggles {
+        display: flex;
+        gap: 8px;
+    }
+
+    .preview-toggles .btn {
+        gap: 8px;
+    }
+
+    .preview-toggles .btn.active {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    /* Simulation Container */
+    #tab-content.mobile-view {
+        max-width: 375px;
+        margin: 0 auto;
+        border: 12px solid #333;
+        border-radius: 36px;
+        padding: 40px 15px;
+        height: 700px;
+        overflow-y: auto;
+        background: white;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+    }
+
+    #tab-content.mobile-view .block-editor-container {
+        padding: 10px;
+    }
+
+    #tab-content.mobile-view .block-item {
+        padding: 10px;
+    }
+</style>
+
+<script>
+    function setPreviewSize(size) {
+        const content = document.getElementById('tab-content');
+        const desktopBtn = document.getElementById('desktopViewBtn');
+        const mobileBtn = document.getElementById('mobileViewBtn');
+
+        if (size === 'mobile') {
+            content.classList.add('mobile-view');
+            mobileBtn.classList.add('active');
+            desktopBtn.classList.remove('active');
+        } else {
+            content.classList.remove('mobile-view');
+            desktopBtn.classList.add('active');
+            mobileBtn.classList.remove('active');
+        }
+    }
+</script>
 
 <style>
     .tab-btn {

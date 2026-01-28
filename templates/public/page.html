@@ -24,11 +24,25 @@
                 <a href="#" class="btn btn-primary block-button">{{.Content}}</a>
             </div>
             {{else if eq .Type "embed"}}
+            <div class="embed-header">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+                <span class="embed-title">Embedded Content</span>
+            </div>
             <div class="responsive-embed-wrapper">
                 {{.Content | safe}}
             </div>
             {{else if eq .Type "html"}}
-            <div class="block-html">{{.Content | safe}}</div>
+            <div class="embed-header">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+                <span class="embed-title">HTML Content</span>
+            </div>
+            <div class="block-html-content">
+                {{.Content | safe}}
+            </div>
             {{end}}
         </div>
         {{end}}
@@ -87,8 +101,56 @@
     .responsive-embed-wrapper video {
         width: 100%;
         max-width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
         border: none;
+        border-radius: 0 0 12px 12px;
+    }
+
+    /* Odoo-style Embed Delivery */
+    .block-embed,
+    .block-html {
+        background: #111;
         border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .embed-header {
+        background: #2D2D2D;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .dot-red {
+        background: #FF5F56;
+    }
+
+    .dot-yellow {
+        background: #FFBD2E;
+    }
+
+    .dot-green {
+        background: #27C93F;
+    }
+
+    .embed-title {
+        color: #888;
+        font-size: 11px;
+        font-family: monospace;
+        margin-left: auto;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     /* Button Optimization */
@@ -104,11 +166,15 @@
         font-size: 1.1rem;
         font-weight: 600;
         border-radius: 50px;
-        transition: transform 0.2s;
+        transition: transform 0.2s, background-color 0.2s;
+        background-color: var(--primary);
+        color: white;
+        text-decoration: none;
     }
 
     .block-button:hover {
         transform: scale(1.05);
+        opacity: 0.9;
     }
 
     /* Mobile Responsive Hooks */
@@ -128,6 +194,10 @@
         .block-button {
             width: 100%;
             padding: 12px 20px;
+        }
+
+        .block-image {
+            border-radius: 8px;
         }
     }
 </style>
