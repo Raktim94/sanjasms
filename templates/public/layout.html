@@ -54,8 +54,8 @@
             --text-primary: #1D1D1F;
             --text-secondary: #86868B;
             --bg-color: #FFFFFF;
-            --nav-bg: rgba(255, 255, 255, 0.72);
-            --accent-glow: rgba(0, 122, 255, 0.15);
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --border-color: rgba(0, 0, 0, 0.08);
         }
 
         body {
@@ -69,25 +69,39 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        .header-wrapper {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            padding: 0 20px;
+            pointer-events: none;
+        }
+
         header {
             background: var(--nav-bg);
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            padding: 0 32px;
-            height: 52px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            padding: 0 24px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 1100px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            pointer-events: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .logo {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-primary);
             text-decoration: none;
             display: flex;
@@ -99,24 +113,21 @@
         .logo img {
             height: 28px;
             width: auto;
-            border-radius: 6px;
+            border-radius: 50%;
         }
 
         nav {
             display: flex;
             gap: 24px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+            align-items: center;
         }
 
         nav a {
             text-decoration: none;
             color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 400;
+            font-size: 14px;
+            font-weight: 500;
             transition: color 0.2s;
-            letter-spacing: -0.01em;
         }
 
         nav a:hover,
@@ -124,24 +135,49 @@
             color: var(--text-primary);
         }
 
+        nav a.nav-pill {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 100px;
+        }
+
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
-        .btn-login {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 6px 14px;
-            border-radius: 12px;
-            transition: background 0.2s;
+        .action-icon {
+            color: var(--text-secondary);
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+            cursor: pointer;
         }
 
-        .btn-login:hover {
+        .action-icon:hover {
             background: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+
+        .btn-contact {
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 100px;
+            transition: transform 0.2s;
+        }
+
+        .btn-contact:hover {
+            transform: scale(1.02);
+            opacity: 0.9;
         }
 
         .mobile-toggle {
@@ -156,37 +192,34 @@
         main {
             flex: 1;
             width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        footer {
-            background: #F5F5F7;
-            padding: 60px 40px;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 12px;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 100px;
+            /* Offset for floating header */
         }
 
         @media (max-width: 768px) {
+            .header-wrapper {
+                top: 10px;
+                padding: 0 10px;
+            }
+
             header {
+                height: 50px;
                 padding: 0 16px;
             }
 
             nav {
                 display: none;
-                position: fixed;
-                top: 52px;
+                position: absolute;
+                top: 60px;
                 left: 0;
                 right: 0;
                 background: white;
                 flex-direction: column;
                 padding: 20px;
                 gap: 16px;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-                transform: none;
-                z-index: 999;
+                border-radius: 20px;
+                border: 1px solid var(--border-color);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             }
 
             nav.active {
@@ -201,33 +234,58 @@
                 display: none;
             }
         }
+
+        footer {
+            background: #F5F5F7;
+            padding: 60px 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
     </style>
     {{range .Embeds}}{{if .IsActive}}{{.Code | safe}}{{end}}{{end}}
     {{if .Page}}{{.Page.CustomHead | safe}}{{end}}
 </head>
 
 <body>
-    <header>
-        <a href="/" class="logo">
-            {{if $logo_url}}<img src="{{$logo_url}}">{{end}}
-            <span>{{if $site_title}}{{$site_title}}{{else}}sanjanacms{{end}}</span>
-        </a>
-        <nav id="mainNav">
-            {{range .Menus}}<a href="{{.URL}}">{{.Label}}</a>{{end}}
-            <a href="/admin/login" class="mobile-only" style="display:none;">Login</a>
-        </nav>
-        <div class="header-actions">
-            <a href="/admin/login" class="btn-login">Login</a>
-        </div>
-        <button class="mobile-toggle" onclick="toggleMenu()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-        </button>
-    </header>
+    <div class="header-wrapper">
+        <header>
+            <a href="/" class="logo">
+                {{if $logo_url}}<img src="{{$logo_url}}">{{end}}
+                <span>{{if $site_title}}{{$site_title}}{{else}}sanjanacms{{end}}</span>
+            </a>
+            <nav id="mainNav">
+                {{range .Menus}}<a href="{{.URL}}">{{.Label}}</a>{{end}}
+                <a href="/admin/login" class="mobile-only" style="display:none;">Login</a>
+            </nav>
+            <div class="header-actions">
+                <div class="action-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <a href="/admin/login" class="action-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+                <a href="#" class="btn-contact">Contact Us</a>
+            </div>
+            <button class="mobile-toggle" onclick="toggleMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </header>
+    </div>
     <script>
         function toggleMenu() {
             const nav = document.getElementById('mainNav');

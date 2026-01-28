@@ -10,38 +10,30 @@
     </div>
     {{end}}
 
-    <div class="blocks-container">
+    <div class="page-content">
         {{range .Page.Blocks}}
-        <div class="block-wrapper block-{{.Type}}">
-            {{if eq .Type "text"}}
-            <div class="block-text">{{.Content | safe}}</div>
+        <div class="block block-{{.Type}}">
+            {{if eq .Type "heading"}}
+            <h1 class="block-title">{{.Content}}</h1>
+            {{else if eq .Type "text"}}
+            <div class="block-text">{{.Content}}</div>
             {{else if eq .Type "image"}}
-            <div class="block-image-container">
-                <img src="{{.Content}}" class="block-image" alt="">
-            </div>
+            <img src="{{.Content}}" class="block-image" alt="Page image">
             {{else if eq .Type "button"}}
             <div class="block-button-container">
                 <a href="#" class="btn btn-primary block-button">{{.Content}}</a>
             </div>
             {{else if eq .Type "embed"}}
-            <div class="embed-header">
-                <div class="dot dot-red"></div>
-                <div class="dot dot-yellow"></div>
-                <div class="dot dot-green"></div>
-                <span class="embed-title">Embedded Content</span>
-            </div>
-            <div class="responsive-embed-wrapper">
-                {{.Content | safe}}
+            <div class="block-embed">
+                <div class="responsive-embed-wrapper">
+                    {{.Content | safe}}
+                </div>
             </div>
             {{else if eq .Type "html"}}
-            <div class="embed-header">
-                <div class="dot dot-red"></div>
-                <div class="dot dot-yellow"></div>
-                <div class="dot dot-green"></div>
-                <span class="embed-title">HTML Content</span>
-            </div>
-            <div class="block-html-content" data-content="{{.Content}}">
-                {{.Content | safe}}
+            <div class="block-html">
+                <div class="block-html-content" data-content="{{.Content}}">
+                    {{.Content | safe}}
+                </div>
             </div>
             {{end}}
         </div>
@@ -62,6 +54,18 @@
                 el.innerHTML = `<img src="${text}" class="embed-detected-image" alt="Embedded Content">`;
             }
         });
+
+        // Handle Iframes: Remove hardcoded width/height if present to allow CSS control
+        const iframes = document.querySelectorAll('iframe');
+        iframes.forEach(iframe => {
+            iframe.removeAttribute('width');
+            iframe.removeAttribute('height');
+            iframe.style.width = '100%';
+            // If it's a known video source, we use aspect ratio, otherwise we let it be
+            if (iframe.src.includes('youtube.com') || iframe.src.includes('vimeo.com')) {
+                iframe.style.aspectRatio = '16 / 9';
+            }
+        });
     });
 </script>
 
@@ -77,117 +81,73 @@
         padding: 0;
     }
 
-    .blocks-container {
+    .page-content {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
+        gap: 0;
+        /* Let blocks handle their own spacing */
     }
 
-    /* Text Block Optimization */
+    .block {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Heading/Text Padding */
+    .block-heading,
+    .block-text {
+        padding: 20px 40px;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .block-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        letter-spacing: -0.03em;
+    }
+
     .block-text {
         font-size: 1.15rem;
         line-height: 1.7;
-        color: #333;
+        color: #444;
     }
 
     /* Image Block Optimization */
-    .block-image-container {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
     .block-image {
-        max-width: 100%;
-        height: auto;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    /* Responsive Embed Optimization (PC/Mobile) */
-    .responsive-embed-wrapper {
-        position: relative;
         width: 100%;
-        overflow: hidden;
-        border-radius: 12px;
-    }
-
-    /* Handle iframes specifically (YouTube, Maps, etc) */
-    .responsive-embed-wrapper iframe,
-    .responsive-embed-wrapper video {
-        width: 100%;
-        max-width: 100%;
+        display: block;
         height: auto;
-        aspect-ratio: 16 / 9;
-        border: none;
-        border-radius: 0 0 12px 12px;
     }
 
-    /* Odoo-style Embed Delivery */
+    /* Borderless Embed/HTML Blocks */
     .block-embed,
     .block-html {
+        width: 100%;
         background: transparent;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        /* Subtle border */
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        margin: 20px 0;
-    }
-
-    .embed-header {
-        background: #f8f9fa;
-        padding: 8px 14px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-    }
-
-    .dot-red {
-        background: #ff5f57;
-        opacity: 0.6;
-    }
-
-    .dot-yellow {
-        background: #febc2e;
-        opacity: 0.6;
-    }
-
-    .dot-green {
-        background: #28c840;
-        opacity: 0.6;
-    }
-
-    .embed-title {
-        color: #999;
-        font-size: 10px;
-        font-family: -apple-system, sans-serif;
-        margin-left: auto;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 500;
+        margin: 0;
+        padding: 0;
     }
 
     .responsive-embed-wrapper,
     .block-html-content {
-        padding: 0;
-        background: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 50px;
+        width: 100%;
+        display: block;
+        min-height: 10px;
+    }
+
+    .responsive-embed-wrapper iframe,
+    .responsive-embed-wrapper video {
+        width: 100%;
+        border: none;
+        display: block;
     }
 
     /* Fix image URL display in embeds */
     .embed-detected-image {
-        max-width: 100%;
+        width: 100%;
         height: auto;
         display: block;
     }
@@ -196,19 +156,20 @@
     .block-button-container {
         display: flex;
         justify-content: center;
-        padding: 10px 0;
+        padding: 40px 0;
     }
 
     .block-button {
         display: inline-block;
-        padding: 14px 32px;
+        padding: 16px 40px;
         font-size: 1.1rem;
         font-weight: 600;
-        border-radius: 50px;
+        border-radius: 100px;
         transition: transform 0.2s, background-color 0.2s;
         background-color: var(--primary);
         color: white;
         text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .block-button:hover {
@@ -218,25 +179,19 @@
 
     /* Mobile Responsive Hooks */
     @media (max-width: 768px) {
-        .page-container {
-            padding: 30px 15px;
-        }
 
+        .block-heading,
         .block-text {
-            font-size: 1.05rem;
+            padding: 20px;
         }
 
-        .blocks-container {
-            gap: 1.5rem;
+        .block-title {
+            font-size: 2rem;
         }
 
         .block-button {
-            width: 100%;
-            padding: 12px 20px;
-        }
-
-        .block-image {
-            border-radius: 8px;
+            width: 90%;
+            text-align: center;
         }
     }
 </style>
