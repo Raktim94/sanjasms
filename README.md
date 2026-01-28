@@ -105,15 +105,18 @@ If you encounter issues or want to see the server activity, use these commands:
 ### 🔋 Managing the Containers (Up/Down)
 -   **Stop the CMS:**
     ```bash
-    docker compose stop
+    docker compose down
+
     ```
 -   **Start it again:**
     ```bash
-    docker compose start
+    docker compose build --no-cache
+
     ```
 -   **Shut down and remove containers:**
     ```bash
-    docker compose down
+    docker compose up -d
+
     ```
 -   **Hard Reset (Delete all data/database):**
     > [!CAUTION]
