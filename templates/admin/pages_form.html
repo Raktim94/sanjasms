@@ -208,23 +208,40 @@
     /* Simulation Container */
     #tab-content.mobile-view {
         max-width: 375px;
-        margin: 0 auto;
-        border: 12px solid #333;
-        border-radius: 36px;
-        padding: 40px 15px;
-        height: 700px;
+        margin: 40px auto;
+        border: 14px solid #1a1a1a;
+        border-radius: 40px;
+        padding: 0;
+        height: 720px;
         overflow-y: auto;
         background: white;
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+        transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.25);
+        position: relative;
+    }
+
+    #tab-content.mobile-view::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        height: 30px;
+        background: #1a1a1a;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        z-index: 100;
     }
 
     #tab-content.mobile-view .block-editor-container {
-        padding: 10px;
+        padding: 50px 15px 15px 15px;
     }
 
     #tab-content.mobile-view .block-item {
-        padding: 10px;
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 12px;
     }
 </style>
 
