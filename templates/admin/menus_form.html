@@ -11,6 +11,7 @@
 <div class="card">
     {{if .Error}}<p style="color:red;">{{.Error}}</p>{{end}}
     <form method="POST" action="{{if .IsNew}}/admin/menus{{else}}/admin/menus/{{.Menu.ID}}{{end}}">
+        <input type="hidden" name="_csrf" value="{{.csrf}}">
         <label style="display:block; margin-bottom:5px;">Label</label>
         <input type="text" name="label" value="{{.Menu.Label}}" required
             style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ddd;">

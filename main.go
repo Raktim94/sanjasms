@@ -1,20 +1,25 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"runtime/debug"
 	"strings"
+	"time"
 
 	"odoo-lite-cms/handlers"
 	"odoo-lite-cms/middleware"
 	"odoo-lite-cms/models"
 
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
@@ -51,6 +56,29 @@ func main() {
 		}
 	})
 	e.Use(echoMiddleware.Logger())
+	e.Use(echoMiddleware.Recover())
+
+	// Session Middleware (Secure Cookie)
+	sessionSecret := os.Getenv("SESSION_SECRET")
+	if sessionSecret == "" {
+		sessionSecret = "super-secret-key-change-it-in-production"
+	}
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(sessionSecret))))
+
+	// CSRF Protection
+	e.Use(echoMiddleware.CSRFWithConfig(echoMiddleware.CSRFConfig{
+		TokenLookup: "form:_csrf", // Look for CSRF token in hidden form input
+		CookiePath:  "/",
+	}))
+
+	// Rate Limiting
+	e.Use(echoMiddleware.RateLimiter(echoMiddleware.NewRateLimiterMemoryStore(20))) // 20 requests per second
+
+	// CORS (Optional but good for API consistency)
+	e.Use(echoMiddleware.CORSWithConfig(echoMiddleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
 
 	// Template Registry
 	t := &Template{
@@ -250,6 +278,21 @@ func main() {
 		port = "8080"
 	}
 
-	log.Printf("Starting sanjanacms on port %s...", port)
-	e.Logger.Fatal(e.Start(":" + port))
+	// Start server with Graceful Shutdown
+	go func() {
+		log.Printf("Starting sanjanacms on port %s...", port)
+		if err := e.Start(":" + port); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down the server")
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
 }

@@ -28,6 +28,7 @@ func MenuNew(c echo.Context) error {
 		"Menu":     models.Menu{IsActive: true, Sequence: 10},
 		"IsNew":    true,
 		"AllMenus": allMenus,
+		"csrf":     c.Get("csrf"),
 	})
 }
 
@@ -56,6 +57,7 @@ func MenuCreate(c echo.Context) error {
 			"Menu":   menu,
 			"Error":  "Could not save menu item.",
 			"IsNew":  true,
+			"csrf":   c.Get("csrf"),
 		})
 	}
 	return c.Redirect(http.StatusFound, "/admin/menus")
@@ -77,6 +79,7 @@ func MenuEdit(c echo.Context) error {
 		"Menu":     menu,
 		"IsNew":    false,
 		"AllMenus": allMenus,
+		"csrf":     c.Get("csrf"),
 	})
 }
 
@@ -108,6 +111,7 @@ func MenuUpdate(c echo.Context) error {
 			"Menu":   menu,
 			"Error":  "Could not update menu item.",
 			"IsNew":  false,
+			"csrf":   c.Get("csrf"),
 		})
 	}
 	return c.Redirect(http.StatusFound, "/admin/menus")

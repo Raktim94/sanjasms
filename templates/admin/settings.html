@@ -18,6 +18,7 @@
 
 <div class="card">
     <form method="POST" action="/admin/settings" class="admin-form">
+        <input type="hidden" name="_csrf" value="{{.csrf}}">
         <section class="form-section">
             <h3>Website Identity</h3>
             <div class="form-group">

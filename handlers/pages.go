@@ -39,6 +39,7 @@ func PageCreate(c echo.Context) error {
 		CustomHead:      c.FormValue("custom_head"),
 		CustomBody:      c.FormValue("custom_body"),
 		IsPublished:     c.FormValue("is_published") == "on",
+		IsDraft:         c.FormValue("is_draft") == "on",
 	}
 
 	if page.Slug == "" {
@@ -52,6 +53,7 @@ func PageCreate(c echo.Context) error {
 			"Page":   page,
 			"Error":  "Could not save page. ensure slug is unique.",
 			"IsNew":  true,
+			"csrf":   c.Get("csrf"),
 		})
 	}
 
@@ -93,6 +95,7 @@ func PageUpdate(c echo.Context) error {
 	page.CustomHead = c.FormValue("custom_head")
 	page.CustomBody = c.FormValue("custom_body")
 	page.IsPublished = c.FormValue("is_published") == "on"
+	page.IsDraft = c.FormValue("is_draft") == "on"
 
 	if err := models.DB.Save(&page).Error; err != nil {
 		return c.Render(http.StatusOK, "pages_form.html", map[string]interface{}{
@@ -101,6 +104,7 @@ func PageUpdate(c echo.Context) error {
 			"Page":   page,
 			"Error":  "Could not update page.",
 			"IsNew":  false,
+			"csrf":   c.Get("csrf"),
 		})
 	}
 

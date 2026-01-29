@@ -19,6 +19,7 @@ func MediaList(c echo.Context) error {
 		"Title":  "Media Manager",
 		"Active": "media",
 		"Files":  files,
+		"csrf":   c.Get("csrf"),
 	})
 }
 

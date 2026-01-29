@@ -11,6 +11,7 @@
 <div class="card">
     <form action="{{if .Embed}}/admin/embeds/{{.Embed.ID}}{{else}}/admin/embeds{{end}}" method="POST"
         class="admin-form">
+        <input type="hidden" name="_csrf" value="{{.csrf}}">
         <div class="form-group">
             <label for="Name">Name (e.g., Google Analytics, YouTube Script)</label>
             <input type="text" id="Name" name="Name" value="{{if .Embed}}{{.Embed.Name}}{{end}}" required>

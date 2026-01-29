@@ -22,6 +22,7 @@ func UserNew(c echo.Context) error {
 	return c.Render(http.StatusOK, "users_form.html", map[string]interface{}{
 		"Title":  "Add New User",
 		"Active": "users",
+		"csrf":   c.Get("csrf"),
 	})
 }
 

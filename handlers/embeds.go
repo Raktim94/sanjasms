@@ -21,6 +21,7 @@ func EmbedNew(c echo.Context) error {
 	return c.Render(http.StatusOK, "embeds_form.html", map[string]interface{}{
 		"Title":  "New Embed",
 		"Active": "embeds",
+		"csrf":   c.Get("csrf"),
 	})
 }
 
@@ -48,6 +49,7 @@ func EmbedEdit(c echo.Context) error {
 		"Title":  "Edit Embed",
 		"Embed":  embed,
 		"Active": "embeds",
+		"csrf":   c.Get("csrf"),
 	})
 }
 

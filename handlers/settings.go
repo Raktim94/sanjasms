@@ -34,6 +34,7 @@ func SettingsPage(c echo.Context) error {
 		"Title":    "Site Settings",
 		"Active":   "settings",
 		"Settings": settings,
+		"csrf":     c.Get("csrf"),
 	})
 }
 

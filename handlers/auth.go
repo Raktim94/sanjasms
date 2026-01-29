@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"net/http"
-	"time"
 
 	"odoo-lite-cms/models"
 
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -94,22 +94,17 @@ func LoginService(c echo.Context) error {
 		return c.Render(http.StatusOK, "login.html", map[string]interface{}{"Error": "Invalid credentials"})
 	}
 
-	// Set cookie
-	cookie := new(http.Cookie)
-	cookie.Name = "admin_session"
-	cookie.Value = "logged_in" // In real app, use a secure token/session ID
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	cookie.Path = "/" // Important!
-	c.SetCookie(cookie)
+	// Set session
+	sess, _ := session.Get("admin_session", c)
+	sess.Values["authenticated"] = true
+	sess.Save(c.Request(), c.Response())
 
 	return c.Redirect(http.StatusFound, "/admin/dashboard")
 }
 
 func Logout(c echo.Context) error {
-	cookie := new(http.Cookie)
-	cookie.Name = "admin_session"
-	cookie.MaxAge = -1
-	cookie.Path = "/"
-	c.SetCookie(cookie)
+	sess, _ := session.Get("admin_session", c)
+	sess.Values["authenticated"] = false
+	sess.Save(c.Request(), c.Response())
 	return c.Redirect(http.StatusFound, "/admin/login")
 }

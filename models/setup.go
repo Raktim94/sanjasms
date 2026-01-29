@@ -121,6 +121,7 @@ func initializeDefaults(db *gorm.DB) {
 				</section>
 			`,
 			IsPublished: true,
+			IsDraft:     false,
 		},
 		{
 			Slug:            "about",
@@ -135,6 +136,7 @@ func initializeDefaults(db *gorm.DB) {
 				</div>
 			`,
 			IsPublished: true,
+			IsDraft:     false,
 		},
 		{
 			Slug:            "contact",
@@ -148,6 +150,7 @@ func initializeDefaults(db *gorm.DB) {
 				</div>
 			`,
 			IsPublished: true,
+			IsDraft:     false,
 		},
 	}
 
@@ -158,10 +161,11 @@ func initializeDefaults(db *gorm.DB) {
 			log.Printf("Created demo page: %s", p.Slug)
 		} else {
 			// Ensure essential demo pages are published if they exist (fixes partial seed issues)
-			if !page.IsPublished {
+			if !page.IsPublished || page.IsDraft {
 				page.IsPublished = true
+				page.IsDraft = false
 				db.Save(&page)
-				log.Printf("Corrected demo page to published: %s", p.Slug)
+				log.Printf("Corrected demo page to published and non-draft: %s", p.Slug)
 			}
 		}
 	}

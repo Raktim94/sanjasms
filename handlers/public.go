@@ -39,7 +39,7 @@ func PublicPage(c echo.Context) error {
 	// Find published page by slug
 	if err := models.DB.Preload("Blocks", func(db *gorm.DB) *gorm.DB {
 		return db.Order("sequence ASC")
-	}).Where("slug = ? AND is_published = ?", slug, true).First(&page).Error; err != nil {
+	}).Where("slug = ? AND is_published = ? AND is_draft = ?", slug, true, false).First(&page).Error; err != nil {
 		log.Printf("Page not found in DB: %s (error: %v)", slug, err)
 
 		// Render 404 with safe context
@@ -88,7 +88,7 @@ func GetPublicMenus() []models.Menu {
 
 func Sitemap(c echo.Context) error {
 	var pages []models.Page
-	if err := models.DB.Where("is_published = ?", true).Find(&pages).Error; err != nil {
+	if err := models.DB.Where("is_published = ? AND is_draft = ?", true, false).Find(&pages).Error; err != nil {
 		return c.XML(http.StatusInternalServerError, nil)
 	}
 
