@@ -47,22 +47,28 @@
         const wrappers = document.querySelectorAll('.responsive-embed-wrapper, .block-html-content');
         wrappers.forEach(el => {
             const text = el.textContent.trim();
-            // Simple regex for Image URL
-            const isImageUrl = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg|bmp))(?:\?.*)?$/i.test(text);
+            // Robust regex for Image URL (handles various extensions and query params)
+            const isImageUrl = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg|bmp|avif))(?:\?.*)?$/i.test(text);
 
             if (isImageUrl && !el.querySelector('img')) {
-                el.innerHTML = `<img src="${text}" class="embed-detected-image" alt="Embedded Content">`;
+                const img = document.createElement('img');
+                img.src = text;
+                img.className = 'embed-detected-image';
+                img.alt = 'External Content';
+                img.loading = 'lazy';
+                el.innerHTML = '';
+                el.appendChild(img);
             }
         });
 
         // Handle Iframes: Remove hardcoded width/height if present to allow CSS control
         const iframes = document.querySelectorAll('iframe');
         iframes.forEach(iframe => {
-            iframe.removeAttribute('width');
-            iframe.removeAttribute('height');
+            if (iframe.getAttribute('width')) iframe.removeAttribute('width');
+            if (iframe.getAttribute('height')) iframe.removeAttribute('height');
             iframe.style.width = '100%';
-            // If it's a known video source, we use aspect ratio, otherwise we let it be
-            if (iframe.src.includes('youtube.com') || iframe.src.includes('vimeo.com')) {
+            // If it's a known video source, we use aspect ratio
+            if (iframe.src.includes('youtube.com') || iframe.src.includes('vimeo.com') || iframe.src.includes('youtube-nocookie.com')) {
                 iframe.style.aspectRatio = '16 / 9';
             }
         });
@@ -71,71 +77,71 @@
 
 <style>
     .page-container {
-        max-width: 1100px;
+        width: 100%;
         margin: 0 auto;
-        padding: 60px 20px;
+        padding: 40px 0;
     }
 
     .landing-page {
-        max-width: 100%;
         padding: 0;
     }
 
     .page-content {
         display: flex;
         flex-direction: column;
-        gap: 0;
-        /* Let blocks handle their own spacing */
+        width: 100%;
     }
 
     .block {
         width: 100%;
         margin: 0;
-        padding: 0;
     }
 
-    /* Heading/Text Padding */
+    /* Standard Blocks: Centered & Padded */
     .block-heading,
-    .block-text {
-        padding: 20px 40px;
+    .block-text,
+    .block-button-container {
         max-width: 1100px;
         margin: 0 auto;
+        padding: 20px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .block-title {
-        font-size: 2.5rem;
+        font-size: 3rem;
         font-weight: 800;
-        margin-bottom: 1rem;
-        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
     }
 
     .block-text {
-        font-size: 1.15rem;
-        line-height: 1.7;
-        color: #444;
+        font-size: 1.25rem;
+        line-height: 1.6;
+        color: #374151;
     }
 
-    /* Image Block Optimization */
-    .block-image {
-        width: 100%;
-        display: block;
-        height: auto;
-    }
-
-    /* Borderless Embed/HTML Blocks */
+    /* Full-Width Blocks: Edge to Edge */
+    .block-image,
     .block-embed,
     .block-html {
         width: 100%;
-        background: transparent;
-        margin: 0;
         padding: 0;
+        margin: 0;
+    }
+
+    .block-image img {
+        width: 100%;
+        height: auto;
+        display: block;
     }
 
     .responsive-embed-wrapper,
     .block-html-content {
         width: 100%;
         display: block;
-        min-height: 10px;
+        min-height: 1px;
     }
 
     .responsive-embed-wrapper iframe,
@@ -145,53 +151,56 @@
         display: block;
     }
 
-    /* Fix image URL display in embeds */
+    /* Button Styling */
+    .block-button {
+        display: inline-block;
+        padding: 16px 36px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.2s;
+        background-color: var(--primary);
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .block-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
     .embed-detected-image {
         width: 100%;
         height: auto;
         display: block;
     }
 
-    /* Button Optimization */
-    .block-button-container {
-        display: flex;
-        justify-content: center;
-        padding: 40px 0;
-    }
-
-    .block-button {
-        display: inline-block;
-        padding: 16px 40px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        border-radius: 100px;
-        transition: transform 0.2s, background-color 0.2s;
-        background-color: var(--primary);
-        color: white;
-        text-decoration: none;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .block-button:hover {
-        transform: scale(1.05);
-        opacity: 0.9;
-    }
-
     /* Mobile Responsive Hooks */
     @media (max-width: 768px) {
-
-        .block-heading,
-        .block-text {
-            padding: 20px;
+        .page-container {
+            padding: 20px 0;
         }
 
         .block-title {
-            font-size: 2rem;
+            font-size: 2.25rem;
+            padding: 0 20px;
+        }
+
+        .block-text {
+            font-size: 1.1rem;
+            padding: 0 20px;
+        }
+
+        .block-button-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
         .block-button {
-            width: 90%;
-            text-align: center;
+            width: 100%;
         }
     }
 </style>

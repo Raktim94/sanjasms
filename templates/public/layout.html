@@ -198,13 +198,22 @@
 
         @media (max-width: 768px) {
             .header-wrapper {
-                top: 10px;
-                padding: 0 10px;
+                top: 0;
+                padding: 10px;
+                background: white;
+                /* Solid background on mobile for better visibility */
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             }
 
             header {
-                height: 50px;
+                height: 60px;
                 padding: 0 16px;
+                border: none;
+                border-radius: 0;
+                max-width: 100%;
+                background: transparent;
+                backdrop-filter: none;
+                box-shadow: none;
             }
 
             nav {
@@ -217,7 +226,7 @@
                 flex-direction: column;
                 padding: 20px;
                 gap: 16px;
-                border-radius: 20px;
+                border-radius: 0 0 20px 20px;
                 border: 1px solid var(--border-color);
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             }
@@ -232,6 +241,11 @@
 
             .header-actions {
                 display: none;
+            }
+
+            main {
+                padding-top: 70px;
+                /* Adjusted for mobile header */
             }
         }
 

@@ -195,6 +195,27 @@ To get the latest version of SanjanaCMS:
 
 ---
 
+## 🔗 How to Use Embedded Code
+
+SanjanaCMS allows you to inject custom scripts and snippets (like Google Analytics, Facebook Pixel, or Chat Widgets) globally across your site.
+
+### 1. Adding a Global Embed
+1.  Go to the **Embeds** section in the Admin Sidebar.
+2.  Click **Add New Embed**.
+3.  **Name:** Give it a friendly name (e.g., "Google Analytics").
+4.  **Code:** Paste the `<script>` or `<iframe>` tag provided by your service.
+5.  **Status:** Ensure "Active" is checked.
+6.  Click **Save Embed**.
+
+### 2. Using Custom Code on Specific Pages
+If you only need code on a specific page (e.g., a specific tracking pixel or custom CSS):
+1.  Edit the desired page in **Pages**.
+2.  Go to the **Custom Code** tab.
+3.  Use **Custom Head** for styles and tracking scripts that need to load early.
+4.  Use **Custom Body** for interactive scripts that should load after the page content.
+
+---
+
 ## 🤝 Contributing
 Feel free to fork this project and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
 
