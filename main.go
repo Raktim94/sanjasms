@@ -63,7 +63,15 @@ func main() {
 	if sessionSecret == "" {
 		sessionSecret = "super-secret-key-change-it-in-production"
 	}
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(sessionSecret))))
+	store := sessions.NewCookieStore([]byte(sessionSecret))
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7, // 7 days
+		HttpOnly: true,
+		Secure:   false, // Set to true if using HTTPS
+		SameSite: http.SameSiteLaxMode,
+	}
+	e.Use(session.Middleware(store))
 
 	// CSRF Protection
 	e.Use(echoMiddleware.CSRFWithConfig(echoMiddleware.CSRFConfig{

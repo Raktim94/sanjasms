@@ -46,6 +46,48 @@ Even though it runs in Docker, all data is persistent.
 -   Docker installed on your system.
 -   (Optional) Go 1.25+ if you wish to run/build locally without Docker.
 
+### 🐳 How to Install Docker
+
+To run SanjanaCMS, you need Docker installed on your system.
+
+#### **Windows**
+1.  Download **[Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)**.
+2.  Run the installer and follow the instructions.
+3.  Ensure **WSL 2** is enabled during installation for best performance.
+4.  Restart your computer if prompted.
+
+#### **macOS (Intel or Apple Silicon)**
+1.  Download **[Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)**.
+2.  Open the `.dmg` file and drag Docker to your Applications folder.
+3.  Launch Docker from your Applications folder.
+
+#### **Linux (Ubuntu/Debian)**
+Run the following commands in your terminal:
+```bash
+# Update packages
+sudo apt-get update
+
+# Install dependencies
+sudo apt-get install ca-certificates curl gnupg
+
+# Add Docker's official GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Set up the repository
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker Engine
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+---
+
 ### 1. Permission Fix (Linux/WSL)
 If you encounter a "permission denied" error when running Docker, run:
 ```bash

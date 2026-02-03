@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"odoo-lite-cms/models"
@@ -95,10 +96,19 @@ func LoginService(c echo.Context) error {
 	}
 
 	// Set session
-	sess, _ := session.Get("admin_session", c)
+	sess, err := session.Get("admin_session", c)
+	if err != nil {
+		log.Printf("ERROR: Could not get session: %v", err)
+		return c.Render(http.StatusOK, "login.html", map[string]interface{}{"Error": "Session error", "csrf": c.Get("csrf")})
+	}
 	sess.Values["authenticated"] = true
-	sess.Save(c.Request(), c.Response())
+	err = sess.Save(c.Request(), c.Response())
+	if err != nil {
+		log.Printf("ERROR: Could not save session: %v", err)
+		return c.Render(http.StatusOK, "login.html", map[string]interface{}{"Error": "Save session error", "csrf": c.Get("csrf")})
+	}
 
+	log.Printf("SUCCESS: User %s logged in", email)
 	return c.Redirect(http.StatusFound, "/admin/dashboard")
 }
 
