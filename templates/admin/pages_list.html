@@ -34,6 +34,7 @@
                     <a href="/admin/pages/{{.ID}}/edit" style="margin-right: 10px;">Edit</a>
                     <form method="POST" action="/admin/pages/{{.ID}}/delete" style="display:inline;"
                         onsubmit="return confirm('Are you sure?');">
+                        <input type="hidden" name="_csrf" value="{{$.csrf}}">
                         <button type="submit"
                             style="background:none; border:none; color:red; cursor:pointer; text-decoration:underline; font-size:1em; padding:0;">Delete</button>
                     </form>

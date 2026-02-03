@@ -15,6 +15,7 @@ func MenuList(c echo.Context) error {
 		"Title":  "Menus",
 		"Active": "menus",
 		"Menus":  menus,
+		"csrf":   c.Get("csrf"),
 	})
 }
 

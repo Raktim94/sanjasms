@@ -30,6 +30,7 @@
                     <a href="/admin/embeds/{{.ID}}/edit" class="btn-icon">Edit</a>
                     <form action="/admin/embeds/{{.ID}}/delete" method="POST" style="display:inline;"
                         onsubmit="return confirm('Delete this embed?');">
+                        <input type="hidden" name="_csrf" value="{{$.csrf}}">
                         <button type="submit" class="btn-icon btn-danger">Delete</button>
                     </form>
                 </td>

@@ -39,7 +39,7 @@ func SetupPage(c echo.Context) error {
 
 	// If it's the first run, always allow signup
 	if count == 0 {
-		return c.Render(http.StatusOK, "signup.html", nil)
+		return c.Render(http.StatusOK, "signup.html", map[string]interface{}{"csrf": c.Get("csrf")})
 	}
 
 	// If not first run, check setting
@@ -48,7 +48,7 @@ func SetupPage(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/admin/login")
 	}
 
-	return c.Render(http.StatusOK, "signup.html", nil)
+	return c.Render(http.StatusOK, "signup.html", map[string]interface{}{"csrf": c.Get("csrf")})
 }
 
 func SetupService(c echo.Context) error {
@@ -77,7 +77,7 @@ func SetupService(c echo.Context) error {
 }
 
 func LoginPage(c echo.Context) error {
-	return c.Render(http.StatusOK, "login.html", nil)
+	return c.Render(http.StatusOK, "login.html", map[string]interface{}{"csrf": c.Get("csrf")})
 }
 
 func LoginService(c echo.Context) error {
@@ -87,11 +87,11 @@ func LoginService(c echo.Context) error {
 	var user models.User
 	result := models.DB.Where("email = ?", email).First(&user)
 	if result.Error != nil {
-		return c.Render(http.StatusOK, "login.html", map[string]interface{}{"Error": "Invalid credentials"})
+		return c.Render(http.StatusOK, "login.html", map[string]interface{}{"Error": "Invalid credentials", "csrf": c.Get("csrf")})
 	}
 
 	if !CheckPasswordHash(password, user.PasswordHash) {
-		return c.Render(http.StatusOK, "login.html", map[string]interface{}{"Error": "Invalid credentials"})
+		return c.Render(http.StatusOK, "login.html", map[string]interface{}{"Error": "Invalid credentials", "csrf": c.Get("csrf")})
 	}
 
 	// Set session

@@ -67,7 +67,7 @@ func main() {
 
 	// CSRF Protection
 	e.Use(echoMiddleware.CSRFWithConfig(echoMiddleware.CSRFConfig{
-		TokenLookup: "form:_csrf", // Look for CSRF token in hidden form input
+		TokenLookup: "form:_csrf,header:X-CSRF-Token", // Look for CSRF token in hidden form input or header
 		CookiePath:  "/",
 	}))
 
@@ -220,6 +220,9 @@ func main() {
 
 	// Admin Routes (Protected)
 	adminGroup := e.Group("/admin")
+	e.GET("/admin", func(c echo.Context) error {
+		return c.Redirect(http.StatusMovedPermanently, "/admin/dashboard")
+	})
 	adminGroup.Use(middleware.RequireAuth)
 	adminGroup.GET("/dashboard", handlers.AdminDashboard)
 

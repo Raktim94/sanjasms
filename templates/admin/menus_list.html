@@ -31,6 +31,7 @@
                     <a href="/admin/menus/{{.ID}}/edit" class="btn-icon">✎</a>
                     <form method="POST" action="/admin/menus/{{.ID}}/delete" style="display:inline;"
                         onsubmit="return confirm('Are you sure?');">
+                        <input type="hidden" name="_csrf" value="{{$.csrf}}">
                         <button type="submit" class="btn-icon danger">×</button>
                     </form>
                 </div>
@@ -51,6 +52,7 @@
                             <a href="/admin/menus/{{.ID}}/edit" class="btn-icon">✎</a>
                             <form method="POST" action="/admin/menus/{{.ID}}/delete" style="display:inline;"
                                 onsubmit="return confirm('Are you sure?');">
+                                <input type="hidden" name="_csrf" value="{{$.csrf}}">
                                 <button type="submit" class="btn-icon danger">×</button>
                             </form>
                         </div>
@@ -184,7 +186,10 @@
         try {
             const response = await fetch('/admin/menus/reorder', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '{{.csrf}}'
+                },
                 body: JSON.stringify(data)
             });
 

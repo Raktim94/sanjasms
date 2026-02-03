@@ -14,6 +14,7 @@ func EmbedList(c echo.Context) error {
 		"Title":  "Embed Manager",
 		"Embeds": embeds,
 		"Active": "embeds",
+		"csrf":   c.Get("csrf"),
 	})
 }
 

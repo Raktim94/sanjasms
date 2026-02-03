@@ -14,6 +14,7 @@ func PageList(c echo.Context) error {
 		"Title":  "Pages",
 		"Active": "pages",
 		"Pages":  pages,
+		"csrf":   c.Get("csrf"),
 	})
 }
 
@@ -23,6 +24,7 @@ func PageNew(c echo.Context) error {
 		"Active": "pages",
 		"Page":   models.Page{},
 		"IsNew":  true,
+		"csrf":   c.Get("csrf"),
 	})
 }
 
@@ -74,6 +76,7 @@ func PageEdit(c echo.Context) error {
 		"Active": "pages",
 		"Page":   page,
 		"IsNew":  false,
+		"csrf":   c.Get("csrf"),
 	})
 }
 

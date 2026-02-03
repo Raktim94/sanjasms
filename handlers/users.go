@@ -15,6 +15,7 @@ func UserList(c echo.Context) error {
 		"Title":  "User Management",
 		"Users":  users,
 		"Active": "users",
+		"csrf":   c.Get("csrf"),
 	})
 }
 
