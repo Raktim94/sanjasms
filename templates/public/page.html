@@ -104,12 +104,21 @@
     /* Standard Blocks: Centered & Padded */
     .block-heading,
     .block-text,
+    .block-image,
     .block-button-container {
         max-width: 1100px;
         margin: 0 auto;
         padding: 20px;
         width: 100%;
         box-sizing: border-box;
+    }
+
+    .block-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 12px;
+        /* Modern touch for standard images */
     }
 
     .block-title {
@@ -127,18 +136,11 @@
     }
 
     /* Full-Width Blocks: Edge to Edge */
-    .block-image,
     .block-embed,
     .block-html {
         width: 100%;
         padding: 0;
         margin: 0;
-    }
-
-    .block-image img {
-        width: 100%;
-        height: auto;
-        display: block;
     }
 
     .responsive-embed-wrapper,
